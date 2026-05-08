@@ -17,7 +17,7 @@ import { ActivityFeed } from "@/components/jobs/activity-feed";
 const statusClass = {
   active: "sledge-status-active",
   completed: "sledge-status-completed",
-  "on-hold": "sledge-status-hold",
+  hold: "sledge-status-hold",
 } as const;
 
 export function generateStaticParams() {
