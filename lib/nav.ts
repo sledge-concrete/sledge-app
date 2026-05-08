@@ -1,4 +1,5 @@
 import {
+  Home,
   Clock,
   Briefcase,
   FileBarChart,
@@ -19,6 +20,7 @@ export type NavItem = {
 };
 
 export const navItems: NavItem[] = [
+  { key: "dashboard", label: "Dashboard", href: "/dashboard", icon: Home, mobile: true },
   { key: "time", label: "Time", href: "/dashboard/time", icon: Clock, mobile: true },
   { key: "jobs", label: "Jobs", href: "/dashboard/jobs", icon: Briefcase, mobile: true },
   { key: "payroll", label: "Payroll", href: "/dashboard/payroll", icon: FileBarChart, mobile: false },

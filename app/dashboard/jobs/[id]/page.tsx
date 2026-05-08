@@ -47,13 +47,13 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-medium tracking-tight md:text-3xl">{job.name}</h1>
+            <h1 className="text-3xl font-medium tracking-tight md:text-4xl">{job.name}</h1>
             <Badge className={cn(statusClass[job.status], "font-medium uppercase tracking-[0.04em] text-[10px]")}>{job.status}</Badge>
           </div>
-          <p className="mt-1 flex items-center gap-1 text-sm sledge-meta">
+          <p className="mt-1 flex items-center gap-1 text-base sledge-meta">
             <MapPin className="h-4 w-4" /> {job.address}
           </p>
-          <p className="mt-1 text-xs sledge-meta">
+          <p className="mt-1 text-sm sledge-meta">
             Started {job.startDate} · Lead: {supervisor?.name ?? "—"}
           </p>
         </div>
@@ -77,7 +77,7 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Crew on this job</CardTitle>
+                <CardTitle className="text-lg">Crew on this job</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
@@ -86,9 +86,9 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
                       <Avatar className="h-8 w-8">
                         <AvatarFallback>{m!.initials}</AvatarFallback>
                       </Avatar>
-                      <div className="flex-1 text-sm">
+                      <div className="flex-1 text-base">
                         <div className="font-medium">{m!.name}</div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-sm text-muted-foreground">
                           {m!.id === job.supervisorId ? "Supervisor" : "Employee"}
                         </div>
                       </div>
@@ -99,7 +99,7 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Recent activity</CardTitle>
+                <CardTitle className="text-lg">Recent activity</CardTitle>
               </CardHeader>
               <CardContent>
                 <ActivityFeed entries={jobActivity.slice(0, 4)} />
@@ -111,7 +111,7 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
         <TabsContent value="hours" className="mt-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Hours by employee</CardTitle>
+              <CardTitle className="text-lg">Hours by employee</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
@@ -119,8 +119,8 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
                   .filter((e) => job.crew.includes(e.id) || e.id === job.supervisorId)
                   .map((e) => (
                     <li key={e.id} className="flex items-center justify-between rounded-md border px-3 py-2">
-                      <span className="text-sm font-medium">{e.name}</span>
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-base font-medium">{e.name}</span>
+                      <span className="text-base text-muted-foreground">
                         {Math.floor(job.hoursLogged / (job.crew.length + 1))} hrs
                       </span>
                     </li>

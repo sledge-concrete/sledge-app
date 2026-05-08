@@ -12,6 +12,10 @@ export async function GET() {
     worker_count: j.worker_count,
     lat: j.lat,
     lng: j.lng,
+    service_type: j.service_type,
+    notes: j.notes,
+    supervisorId: j.supervisorId,
+    crew: j.crew,
   }));
   return NextResponse.json(payload);
 }

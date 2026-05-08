@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { ChevronDown, MapPin, Search, Users, X } from "lucide-react";
+import { ChevronDown, MapPin, Search, Users, X, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -108,8 +108,8 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
         </Badge>
       </div>
 
-      <div className="overflow-hidden rounded-lg border bg-card">
-        <div className="relative h-[320px] w-full md:h-[400px]">
+      <div className="overflow-hidden rounded-lg border bg-card relative z-0">
+        <div className="relative h-[320px] w-full md:h-[400px] z-0">
           <JobsMap jobs={visibleJobs} selectedId={selectedId} onSelect={handleSelectFromMap} />
         </div>
       </div>
@@ -154,16 +154,16 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
           <Table>
             <TableHeader className="bg-[#1a1a1a] [&_tr]:border-b-0">
               <TableRow className="hover:bg-[#1a1a1a]">
-                <TableHead className="w-[28%] h-11 text-sm font-semibold uppercase tracking-[0.08em] text-white/80">
+                <TableHead className="w-[28%] h-11 px-6 text-sm font-semibold uppercase tracking-[0.08em] text-white/80">
                   Job
                 </TableHead>
                 <TableHead className="hidden h-11 text-sm font-semibold uppercase tracking-[0.08em] text-white/80 md:table-cell">
                   Number
                 </TableHead>
-                <TableHead className="h-11 text-sm font-semibold uppercase tracking-[0.08em] text-white/80">
+                <TableHead className="h-11 text-center text-sm font-semibold uppercase tracking-[0.08em] text-white/80">
                   Status
                 </TableHead>
-                <TableHead className="hidden h-11 text-sm font-semibold uppercase tracking-[0.08em] text-white/80 sm:table-cell">
+                <TableHead className="hidden h-11 text-center text-sm font-semibold uppercase tracking-[0.08em] text-white/80 sm:table-cell">
                   Crew
                 </TableHead>
                 <TableHead className="hidden h-11 text-sm font-semibold uppercase tracking-[0.08em] text-white/80 lg:table-cell">
@@ -172,8 +172,8 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                 <TableHead className="hidden h-11 text-sm font-semibold uppercase tracking-[0.08em] text-white/80 md:table-cell">
                   Address
                 </TableHead>
-                <TableHead className="h-11 text-right text-sm font-semibold uppercase tracking-[0.08em] text-white/80">
-                  Action
+                <TableHead className="h-11 px-6 text-center text-sm font-semibold uppercase tracking-[0.08em] text-white/80">
+                  Files
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -218,9 +218,9 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                       <TableCell className="hidden font-mono text-xs text-muted-foreground md:table-cell">
                         #{job.number}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-center">
                         <span
-                          className="font-medium uppercase tracking-[0.04em] text-[10px]"
+                          className="font-bold uppercase tracking-[0.04em] text-xs"
                           style={{ color: STATUS_TEXT_COLOR[job.status] }}
                         >
                           {STATUS_LABEL[job.status]}
@@ -231,8 +231,8 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                           </span>
                         )}
                       </TableCell>
-                      <TableCell className="hidden text-sm text-muted-foreground sm:table-cell">
-                        <span className="inline-flex items-center gap-1">
+                      <TableCell className="hidden text-center text-sm text-muted-foreground sm:table-cell">
+                        <span className="inline-flex items-center gap-1 justify-center">
                           <Users className="h-3 w-3" />
                           {job.worker_count}
                         </span>
@@ -244,16 +244,17 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                           <span className="truncate">{job.address}</span>
                         </span>
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-center">
                         <button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleCardOpen(job.id);
                           }}
-                          className="text-xs font-medium text-primary hover:underline"
+                          className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-primary hover:bg-primary/10 transition-colors"
+                          title="View job files"
                         >
-                          {isTablet ? "Upload →" : "Open →"}
+                          <FileText className="h-5 w-5" />
                         </button>
                       </TableCell>
                     </TableRow>
@@ -266,20 +267,20 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                                 <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
                                   Job Number
                                 </div>
-                                <div className="text-sm font-medium">{job.number}</div>
+                                <div className="text-base font-medium">{job.number}</div>
                               </div>
                               <div className="border-r border-black pr-4 sm:pl-4 pb-4 sm:pb-0 sm:border-b sm:border-r-0 lg:border-b-0 lg:border-r lg:pr-4 lg:pl-0">
                                 <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
                                   Client
                                 </div>
-                                <div className="text-sm">{job.client_name}</div>
+                                <div className="text-base">{job.client_name}</div>
                               </div>
                               <div className="border-r border-black pr-4 lg:pl-4">
                                 <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
                                   Status
                                 </div>
                                 <span
-                                  className="font-medium uppercase tracking-[0.04em] text-[10px]"
+                                  className="font-bold uppercase tracking-[0.04em] text-[10px]"
                                   style={{ color: STATUS_TEXT_COLOR[job.status] }}
                                 >
                                   {STATUS_LABEL[job.status]}
@@ -292,36 +293,40 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                                 <button
                                   type="button"
                                   onClick={() => setCrewModalId(job.id)}
-                                  className="text-sm inline-flex items-center gap-1 cursor-pointer hover:text-primary transition-colors"
+                                  className="text-base inline-flex items-center gap-1 cursor-pointer hover:text-primary transition-colors"
                                 >
                                   <Users className="h-4 w-4" />
                                   {job.worker_count} workers
                                 </button>
                               </div>
                             </div>
-                            <div className="pt-4">
-                              <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
-                                Location
-                              </div>
-                              <div className="flex items-start gap-2 text-sm">
-                                <MapPin className="h-4 w-4 shrink-0 mt-0.5 text-muted-foreground" />
-                                <div>{job.address}</div>
+                            <div className="pt-4 border-t border-b border-black">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
+                                <div>
+                                  <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
+                                    Location
+                                  </div>
+                                  <div className="flex items-start gap-2 text-base">
+                                    <MapPin className="h-4 w-4 shrink-0 mt-0.5 text-muted-foreground" />
+                                    <div>{job.address}</div>
+                                  </div>
+                                </div>
+                                {(job as Job).service_type && (
+                                  <div>
+                                    <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
+                                      Service Type
+                                    </div>
+                                    <div className="text-base">{(job as Job).service_type}</div>
+                                  </div>
+                                )}
                               </div>
                             </div>
-                            {(job as Job).service_type && (
-                              <div className="pt-4 border-t border-black">
-                                <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
-                                  Service Type
-                                </div>
-                                <div className="text-sm">{(job as Job).service_type}</div>
-                              </div>
-                            )}
                             {(job as Job).notes && (
                               <div className="pt-4 border-t border-black">
                                 <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
                                   Notes
                                 </div>
-                                <div className="text-sm text-foreground leading-relaxed">{(job as Job).notes}</div>
+                                <div className="text-base text-foreground leading-relaxed">{(job as Job).notes}</div>
                               </div>
                             )}
                           </div>
@@ -350,7 +355,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
             return (
               <div className="space-y-3">
                 {supervisor && (
-                  <div className="flex items-center gap-3 pb-3 border-b">
+                  <div className="flex items-center gap-3 pb-3 border-b-2 border-black/40">
                     <Avatar className="h-10 w-10">
                       <AvatarFallback>{supervisor.initials}</AvatarFallback>
                     </Avatar>

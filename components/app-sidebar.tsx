@@ -53,7 +53,9 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {moduleItems.map((item) => {
-                const active = pathname === item.href || pathname.startsWith(item.href + "/");
+                const active = item.key === "dashboard"
+                  ? pathname === item.href
+                  : pathname === item.href || pathname.startsWith(item.href + "/");
                 return (
                   <SidebarMenuItem key={item.key}>
                     <SidebarMenuButton render={<Link href={item.href} />} isActive={active} tooltip={item.label}>

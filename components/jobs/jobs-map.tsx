@@ -58,6 +58,7 @@ export function JobsMap({ jobs, selectedId, onSelect }: Props) {
 
   return (
     <MapContainer
+      key="jobs-map"
       center={DEFAULT_CENTER}
       zoom={DEFAULT_ZOOM}
       scrollWheelZoom={false}
