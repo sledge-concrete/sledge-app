@@ -25,6 +25,8 @@ export type Job = {
   worker_count: number;
   lat: number;
   lng: number;
+  service_type?: string;
+  notes?: string;
 };
 
 export type JobDocument = {

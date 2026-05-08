@@ -3,19 +3,24 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { ChevronDown, MapPin, Search, Users } from "lucide-react";
+import { ChevronDown, MapPin, Search, Users, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useRole } from "@/lib/role-context";
+import { getEmployee } from "@/lib/mock/employees";
+import type { Job } from "@/lib/mock/types";
 import {
   type JobsApiItem,
   type JobStatus,
   STATUS_COLOR,
   STATUS_LABEL,
   STATUS_RANK,
+  STATUS_TEXT_COLOR,
 } from "@/lib/jobs-types";
 
 const JobsMap = dynamic(() => import("./jobs-map").then((m) => m.JobsMap), {
@@ -30,7 +35,7 @@ const STATUS_PILL_CLASS: Record<JobStatus, string> = {
 };
 
 type FilterState = Record<JobStatus, boolean>;
-const DEFAULT_FILTERS: FilterState = { active: true, hold: true, completed: false };
+const DEFAULT_FILTERS: FilterState = { active: true, hold: true, completed: true };
 
 export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
   const router = useRouter();
@@ -42,6 +47,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [crewModalId, setCrewModalId] = useState<string | null>(null);
   const cardRefs = useRef<Map<string, HTMLTableRowElement>>(new Map());
 
   const visibleJobs = useMemo(() => {
@@ -108,8 +114,12 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {(["active", "hold", "completed"] as JobStatus[]).map((s) => {
+      <div>
+        <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
+          Filter by status
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {(["active", "hold", "completed"] as JobStatus[]).map((s) => {
           const on = filters[s];
           return (
             <button
@@ -117,10 +127,10 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
               type="button"
               onClick={() => toggleFilter(s)}
               className={cn(
-                "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                "inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors",
                 on
                   ? "border-foreground/15 bg-foreground/5 text-foreground"
-                  : "border-border bg-transparent text-muted-foreground opacity-60 hover:opacity-100",
+                  : "border-black bg-transparent text-muted-foreground opacity-60 hover:opacity-100",
               )}
             >
               <span
@@ -131,7 +141,8 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
               {STATUS_LABEL[s]}
             </button>
           );
-        })}
+          })}
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-lg border bg-card">
@@ -181,7 +192,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                       onDoubleClick={() => handleCardOpen(job.id)}
                       className={cn(
                         "cursor-pointer transition-colors border-b-border/30",
-                        isSelected && "!bg-blue-50/60 outline outline-2 outline-blue-500 outline-offset-[-2px]",
+                        isExpanded && "bg-slate-200",
                       )}
                     >
                       <TableCell className="font-medium">
@@ -208,14 +219,12 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                         #{job.number}
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          className={cn(
-                            STATUS_PILL_CLASS[job.status],
-                            "font-medium uppercase tracking-[0.04em] text-[10px]",
-                          )}
+                        <span
+                          className="font-medium uppercase tracking-[0.04em] text-[10px]"
+                          style={{ color: STATUS_TEXT_COLOR[job.status] }}
                         >
                           {STATUS_LABEL[job.status]}
-                        </Badge>
+                        </span>
                         {isSelected && (
                           <span className="ml-2 hidden text-[10px] uppercase tracking-wide text-blue-600 sm:inline">
                             On map
@@ -251,41 +260,43 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                     {isExpanded && (
                       <TableRow className="hover:bg-transparent">
                         <TableCell colSpan={7} className="border-t-0 p-0">
-                          <div className="border-t-2 border-b-2 border-border/40 bg-muted/30 px-4 py-4">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-4 border-b border-border/25">
-                              <div>
+                          <div className="border-t-2 border-b-2 border-black/40 bg-muted/30 px-4 py-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-4 border-b border-black">
+                              <div className="border-r border-black pr-4 pb-4 sm:pb-0 sm:border-b sm:border-r-0 lg:border-b-0 lg:border-r">
                                 <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
                                   Job Number
                                 </div>
                                 <div className="text-sm font-medium">{job.number}</div>
                               </div>
-                              <div>
+                              <div className="border-r border-black pr-4 sm:pl-4 pb-4 sm:pb-0 sm:border-b sm:border-r-0 lg:border-b-0 lg:border-r lg:pr-4 lg:pl-0">
                                 <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
                                   Client
                                 </div>
                                 <div className="text-sm">{job.client_name}</div>
                               </div>
-                              <div>
+                              <div className="border-r border-black pr-4 lg:pl-4">
                                 <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
                                   Status
                                 </div>
-                                <Badge
-                                  className={cn(
-                                    STATUS_PILL_CLASS[job.status],
-                                    "font-medium uppercase tracking-[0.04em] text-[10px]",
-                                  )}
+                                <span
+                                  className="font-medium uppercase tracking-[0.04em] text-[10px]"
+                                  style={{ color: STATUS_TEXT_COLOR[job.status] }}
                                 >
                                   {STATUS_LABEL[job.status]}
-                                </Badge>
+                                </span>
                               </div>
-                              <div>
+                              <div className="lg:pl-4">
                                 <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
                                   Crew
                                 </div>
-                                <div className="text-sm inline-flex items-center gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => setCrewModalId(job.id)}
+                                  className="text-sm inline-flex items-center gap-1 cursor-pointer hover:text-primary transition-colors"
+                                >
                                   <Users className="h-4 w-4" />
                                   {job.worker_count} workers
-                                </div>
+                                </button>
                               </div>
                             </div>
                             <div className="pt-4">
@@ -294,14 +305,25 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                               </div>
                               <div className="flex items-start gap-2 text-sm">
                                 <MapPin className="h-4 w-4 shrink-0 mt-0.5 text-muted-foreground" />
-                                <div>
-                                  <div>{job.address}</div>
-                                  <div className="text-xs text-muted-foreground mt-1">
-                                    Lat: {job.lat.toFixed(4)}, Lng: {job.lng.toFixed(4)}
-                                  </div>
-                                </div>
+                                <div>{job.address}</div>
                               </div>
                             </div>
+                            {(job as Job).service_type && (
+                              <div className="pt-4 border-t border-black">
+                                <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
+                                  Service Type
+                                </div>
+                                <div className="text-sm">{(job as Job).service_type}</div>
+                              </div>
+                            )}
+                            {(job as Job).notes && (
+                              <div className="pt-4 border-t border-black">
+                                <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
+                                  Notes
+                                </div>
+                                <div className="text-sm text-foreground leading-relaxed">{(job as Job).notes}</div>
+                              </div>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -313,6 +335,47 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
           </Table>
         )}
       </div>
+
+      <Dialog open={!!crewModalId} onOpenChange={() => setCrewModalId(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>
+              {jobs.find((j) => j.id === crewModalId)?.name || "Crew"}
+            </DialogTitle>
+          </DialogHeader>
+          {crewModalId && (() => {
+            const job = jobs.find((j) => j.id === crewModalId) as Job;
+            const supervisor = getEmployee(job.supervisorId);
+            const crewMembers = job.crew.map((id) => getEmployee(id)).filter(Boolean);
+            return (
+              <div className="space-y-3">
+                {supervisor && (
+                  <div className="flex items-center gap-3 pb-3 border-b">
+                    <Avatar className="h-10 w-10">
+                      <AvatarFallback>{supervisor.initials}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div className="font-medium text-sm">{supervisor.name}</div>
+                      <div className="text-xs text-muted-foreground">Supervisor</div>
+                    </div>
+                  </div>
+                )}
+                {crewMembers.map((member) => (
+                  <div key={member?.id} className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarFallback>{member?.initials}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div className="font-medium text-sm">{member?.name}</div>
+                      <div className="text-xs text-muted-foreground">Employee</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

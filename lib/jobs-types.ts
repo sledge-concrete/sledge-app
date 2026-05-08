@@ -18,6 +18,12 @@ export const STATUS_COLOR: Record<JobStatus, string> = {
   completed: "#888780",
 };
 
+export const STATUS_TEXT_COLOR: Record<JobStatus, string> = {
+  active: "#2e7d32",
+  hold: "#f57f17",
+  completed: "#666666",
+};
+
 export const STATUS_LABEL: Record<JobStatus, string> = {
   active: "Active",
   hold: "On Hold",
