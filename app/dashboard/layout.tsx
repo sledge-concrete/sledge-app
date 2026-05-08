@@ -7,7 +7,7 @@ import { TabletFlagReader } from "@/components/tablet-flag-reader";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider style={{ "--sidebar-width-icon": "4rem" } as React.CSSProperties}>
+    <SidebarProvider style={{ "--sidebar-width": "13rem", "--sidebar-width-icon": "4rem" } as React.CSSProperties}>
       <Suspense fallback={null}>
         <TabletFlagReader />
       </Suspense>

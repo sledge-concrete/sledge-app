@@ -8,16 +8,25 @@ export type Employee = {
   initials: string;
 };
 
+export type JobStatus = "active" | "hold" | "completed";
+
 export type Job = {
   id: string;
   name: string;
+  number: string;
+  client_name: string;
   address: string;
-  status: "active" | "completed" | "on-hold";
+  status: JobStatus;
   startDate: string;
   endDate?: string;
   supervisorId: string;
   crew: string[];
   hoursLogged: number;
+  worker_count: number;
+  lat: number;
+  lng: number;
+  service_type?: string;
+  notes?: string;
 };
 
 export type JobDocument = {
