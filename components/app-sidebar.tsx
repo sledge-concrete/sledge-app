@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, HardHat } from "lucide-react";
+import { ChevronDown, Hammer } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -39,7 +39,7 @@ export function AppSidebar() {
       <SidebarHeader>
         <div className="flex items-center gap-3 px-2 py-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <HardHat className="h-5 w-5" />
+            <Hammer className="h-5 w-5" />
           </div>
           <div className="flex flex-col leading-tight group-data-[collapsible=icon]:hidden">
             <span className="text-base font-medium text-white">Sledge Concrete</span>
