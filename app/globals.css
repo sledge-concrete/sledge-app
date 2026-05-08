@@ -1,26 +1,272 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  /* Sledge palette */
+  --background: #e8e8ea;
+  --foreground: #2d1a1a;
+  --card: #ffffff;
+  --card-foreground: #2d1a1a;
+  --popover: #ffffff;
+  --popover-foreground: #2d1a1a;
+  --primary: #c0392b;
+  --primary-foreground: #ffffff;
+  --primary-hover: #a93226;
+  --secondary: #ede8e8;
+  --secondary-foreground: #2d1a1a;
+  --muted: #f9f5f5;
+  --muted-foreground: #52525b;
+  --very-muted-foreground: #71717a;
+  --accent: #fdf9f9;
+  --accent-foreground: #2d1a1a;
+  --destructive: #c0392b;
+  --border: #ede8e8;
+  --input: #ede8e8;
+  --ring: #c0392b;
+  --radius: 0.625rem;
+
+  /* Sidebar (dark) */
+  --sidebar: #1a1a1a;
+  --sidebar-foreground: rgba(255, 255, 255, 0.55);
+  --sidebar-primary: #c0392b;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(255, 255, 255, 0.06);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #c0392b;
+
+  /* Status tokens */
+  --status-active-bg: #edf7ed;
+  --status-active-fg: #2e7d32;
+  --status-hold-bg: #fff8e1;
+  --status-hold-fg: #f57f17;
+  --status-completed-bg: #ede8e8;
+  --status-completed-fg: #2d1a1a;
+
+  /* Role badge */
+  --role-badge-bg: #1a1a1a;
+  --role-badge-fg: #ffffff;
+
+  /* Misc */
+  --row-divider: #f9f5f5;
+  --row-hover: #fdf9f9;
+  --topbar-border: #ede8e8;
+  --bell-border: #ede8e8;
+  --bell-fg: #888888;
+  --breadcrumb-inactive: #999999;
+
+  --chart-1: #c0392b;
+  --chart-2: #a93226;
+  --chart-3: #2d1a1a;
+  --chart-4: #a08888;
+  --chart-5: #c4b4b4;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+    font-size: 17px;
+  }
+  @media (min-width: 768px) {
+    html {
+      font-size: 18px;
+    }
+  }
+
+  /* Page titles + card headers: weight 500, strong text */
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--foreground);
+    font-weight: 500;
+  }
+
+  [data-slot="card-title"] {
+    color: var(--foreground);
+    font-weight: 500;
+  }
+  [data-slot="card-description"] {
+    color: var(--very-muted-foreground);
+  }
+
+  /* Labels: uppercase, tracked, muted */
+  [data-slot="label"],
+  [data-slot="form-label"] {
+    color: var(--muted-foreground);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.7rem;
+  }
+
+  /* Sidebar group label override (rgba-on-dark) */
+  [data-slot="sidebar-group-label"] {
+    color: rgba(255, 255, 255, 0.3) !important;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* (sidebar overrides moved outside @layer below) */
+
+  /* Card row dividers + hover for tables and admin lists */
+  [data-slot="table-row"] {
+    border-color: var(--row-divider);
+  }
+  [data-slot="table-row"]:hover {
+    background-color: var(--row-hover);
+  }
+
+  /* Buttons: primary hover */
+  [data-slot="button"][data-variant="default"]:hover,
+  .btn-primary:hover {
+    background-color: var(--primary-hover) !important;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Sidebar menu button overrides — outside @layer for max precedence */
+[data-slot="sidebar-menu-button"] {
+  height: 2.75rem !important;
+  font-size: 1rem !important;
+  padding-left: 0.875rem !important;
+  padding-right: 0.875rem !important;
+  gap: 0.75rem !important;
+}
+[data-slot="sidebar-menu-button"] svg {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+}
+/* Collapsed (icon-only) mode: thin rail, centered glyphs */
+[data-collapsible="icon"] [data-slot="sidebar-menu"],
+[data-collapsible="icon"] [data-slot="sidebar-group-content"],
+[data-collapsible="icon"] [data-slot="sidebar-group"] {
+  align-items: center !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+[data-collapsible="icon"] [data-slot="sidebar-menu-item"] {
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+}
+[data-collapsible="icon"] [data-slot="sidebar-menu-button"] {
+  width: 2.75rem !important;
+  height: 2.75rem !important;
+  padding: 0 !important;
+  margin: 0 auto !important;
+  gap: 0 !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+[data-collapsible="icon"] [data-slot="sidebar-menu-button"] > span {
+  display: none !important;
+}
+[data-collapsible="icon"] [data-slot="sidebar-menu-button"] svg {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+}
+/* Hide group labels when collapsed (already done by shadcn but ensure spacing) */
+[data-collapsible="icon"] [data-slot="sidebar-group-label"] {
+  display: none !important;
+}
+[data-slot="sidebar-menu-button"]:hover {
+  background-color: rgba(192, 57, 43, 0.18) !important;
+  color: #ffffff !important;
+}
+[data-slot="sidebar-menu-button"][data-active],
+[data-slot="sidebar-menu-button"][data-active="true"],
+[data-slot="sidebar-menu-button"][data-active=""] {
+  background-color: #c0392b !important;
+  color: #ffffff !important;
+}
+[data-slot="sidebar-menu-button"][data-active]:hover,
+[data-slot="sidebar-menu-button"][data-active="true"]:hover,
+[data-slot="sidebar-menu-button"][data-active=""]:hover {
+  background-color: #a93226 !important;
+  color: #ffffff !important;
+}
+
+@utility sledge-status-active {
+  background-color: var(--status-active-bg);
+  color: var(--status-active-fg);
+  border-color: transparent;
+}
+@utility sledge-status-hold {
+  background-color: var(--status-hold-bg);
+  color: var(--status-hold-fg);
+  border-color: transparent;
+}
+@utility sledge-status-completed {
+  background-color: var(--status-completed-bg);
+  color: var(--status-completed-fg);
+  border-color: transparent;
+}
+@utility sledge-role-badge {
+  background-color: var(--role-badge-bg);
+  color: var(--role-badge-fg);
+  border-color: transparent;
+}
+@utility sledge-pill-active {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border-color: transparent;
+}
+@utility sledge-pill-inactive {
+  background-color: transparent;
+  color: var(--muted-foreground);
+  border: 1px solid var(--border);
+}
+@utility sledge-meta {
+  color: var(--very-muted-foreground);
 }

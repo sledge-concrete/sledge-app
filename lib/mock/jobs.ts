@@ -1,0 +1,62 @@
+import type { Job, JobDocument, JobPhoto, ActivityEntry } from "./types";
+
+export const jobs: Job[] = [
+  {
+    id: "job-riverfront",
+    name: "Riverfront Commercial Build",
+    address: "1820 Riverfront Dr",
+    status: "active",
+    startDate: "2026-04-12",
+    supervisorId: "u-sarah",
+    crew: ["u-mike", "u-jake", "u-tanya"],
+    hoursLogged: 412,
+  },
+  {
+    id: "job-maple",
+    name: "Maple Street Residential",
+    address: "44 Maple St",
+    status: "active",
+    startDate: "2026-04-28",
+    supervisorId: "u-sarah",
+    crew: ["u-mike", "u-jake"],
+    hoursLogged: 96,
+  },
+  {
+    id: "job-hwy2",
+    name: "Highway 2 Retaining Wall",
+    address: "Hwy 2 km 14",
+    status: "on-hold",
+    startDate: "2026-03-02",
+    supervisorId: "u-sarah",
+    crew: ["u-tanya"],
+    hoursLogged: 184,
+  },
+];
+
+export const getJob = (id: string) => jobs.find((j) => j.id === id);
+
+export const documents: JobDocument[] = [
+  { id: "d-1", jobId: "job-riverfront", filename: "site-plan-rev3.pdf", type: "pdf", uploadedBy: "u-sarah", uploadedAt: "2026-04-30", sizeKb: 2480 },
+  { id: "d-2", jobId: "job-riverfront", filename: "concrete-spec.pdf", type: "pdf", uploadedBy: "u-ben", uploadedAt: "2026-04-15", sizeKb: 980 },
+  { id: "d-3", jobId: "job-riverfront", filename: "permit-2026-A412.pdf", type: "pdf", uploadedBy: "u-ben", uploadedAt: "2026-04-12", sizeKb: 612 },
+  { id: "d-4", jobId: "job-maple", filename: "foundation-drawings.pdf", type: "pdf", uploadedBy: "u-sarah", uploadedAt: "2026-04-29", sizeKb: 3120 },
+  { id: "d-5", jobId: "job-maple", filename: "client-contract.pdf", type: "pdf", uploadedBy: "u-ben", uploadedAt: "2026-04-25", sizeKb: 540 },
+  { id: "d-6", jobId: "job-hwy2", filename: "geotech-report.pdf", type: "pdf", uploadedBy: "u-ben", uploadedAt: "2026-03-01", sizeKb: 4250 },
+];
+
+export const photos: JobPhoto[] = [
+  { id: "p-1", jobId: "job-riverfront", filename: "pour-day-east.jpg", uploadedBy: "u-mike", uploadedAt: "2026-05-04", caption: "East footing pour" },
+  { id: "p-2", jobId: "job-riverfront", filename: "rebar-grid.jpg", uploadedBy: "u-jake", uploadedAt: "2026-05-03" },
+  { id: "p-3", jobId: "job-riverfront", filename: "form-setup.jpg", uploadedBy: "u-tanya", uploadedAt: "2026-05-02" },
+  { id: "p-4", jobId: "job-maple", filename: "site-prep.jpg", uploadedBy: "u-mike", uploadedAt: "2026-05-05" },
+  { id: "p-5", jobId: "job-maple", filename: "excavation.jpg", uploadedBy: "u-jake", uploadedAt: "2026-05-06" },
+  { id: "p-6", jobId: "job-hwy2", filename: "wall-section-A.jpg", uploadedBy: "u-tanya", uploadedAt: "2026-04-20" },
+];
+
+export const activity: ActivityEntry[] = [
+  { id: "a-1", jobId: "job-riverfront", type: "clock-in", actor: "u-mike", at: "2026-05-07T07:02:00", detail: "Clocked in" },
+  { id: "a-2", jobId: "job-riverfront", type: "upload", actor: "u-mike", at: "2026-05-04T16:11:00", detail: "Uploaded pour-day-east.jpg" },
+  { id: "a-3", jobId: "job-riverfront", type: "sign-off", actor: "u-sarah", at: "2026-05-04T07:30:00", detail: "Daily safety sign-off" },
+  { id: "a-4", jobId: "job-maple", type: "note", actor: "u-sarah", at: "2026-05-06T14:00:00", detail: "Foundation inspection scheduled" },
+  { id: "a-5", jobId: "job-hwy2", type: "clock-out", actor: "u-tanya", at: "2026-04-20T17:00:00", detail: "Clocked out" },
+];
