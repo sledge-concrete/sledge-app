@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { JobsView } from "@/components/jobs/jobs-view";
+import { JobsPageClient } from "@/components/jobs/jobs-page-client";
 import type { JobsApiItem } from "@/lib/jobs-types";
 
 async function fetchJobs(): Promise<JobsApiItem[]> {
@@ -15,20 +16,7 @@ async function fetchJobs(): Promise<JobsApiItem[]> {
 }
 
 export default async function JobsPage() {
-  const jobs = await fetchJobs();
+  const initialJobs = await fetchJobs();
 
-  return (
-    <div>
-      <PageHeader
-        title="Jobs"
-        description="Map view of every job site. Tap a pin or card to focus, double-tap to open."
-        action={
-          <Button>
-            <Plus className="mr-1 h-4 w-4" /> New Job
-          </Button>
-        }
-      />
-      <JobsView initialJobs={jobs} />
-    </div>
-  );
+  return <JobsPageClient initialJobs={initialJobs} />;
 }
