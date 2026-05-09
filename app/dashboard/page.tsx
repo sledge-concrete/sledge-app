@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
+import { WeatherCarousel } from "@/components/weather-carousel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { jobs } from "@/lib/mock/jobs";
@@ -13,6 +14,7 @@ export default function DashboardPage() {
   return (
     <div>
       <PageHeader title="Today" description="Quick overview of crew, jobs, and hours." />
+      <WeatherCarousel />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
