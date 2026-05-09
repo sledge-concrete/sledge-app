@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { AppTopbar } from "@/components/app-topbar";
 import { AppBottomNav } from "@/components/app-bottom-nav";
 import { TabletFlagReader } from "@/components/tablet-flag-reader";
+import { WeatherCarousel } from "@/components/weather-carousel";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -13,6 +14,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </Suspense>
       <AppSidebar />
       <SidebarInset>
+        <WeatherCarousel />
         <AppTopbar />
         <main className="flex-1 px-3 pb-24 pt-4 md:px-6 md:pb-6">{children}</main>
         <AppBottomNav />
