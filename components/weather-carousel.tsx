@@ -129,7 +129,7 @@ export function WeatherCarousel() {
         className="flex items-center justify-between gap-4 animate-in fade-in slide-in-from-right-2 duration-500"
       >
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="flex-shrink-0 rounded-lg bg-red-500/15 p-2">
+          <div className="flex-shrink-0 rounded-lg border-2 border-slate-400 p-2">
             {current.weather && getWeatherIcon(current.weather.icon)}
             {!current.weather && current.loading && <div className="h-5 w-5 animate-pulse rounded-full bg-gray-400" />}
           </div>
