@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronDown, MapPin, Search, Users, X, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -103,7 +104,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
             className="pl-9"
           />
         </div>
-        <Badge variant="secondary" className="font-medium">
+        <Badge variant="secondary" className="font-medium rounded-lg">
           {visibleJobs.length} {visibleJobs.length === 1 ? "job" : "jobs"}
         </Badge>
       </div>
@@ -130,7 +131,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                 "inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors",
                 on
                   ? "border-foreground/15 bg-foreground/5 text-foreground"
-                  : "border-black bg-transparent text-muted-foreground opacity-60 hover:opacity-100",
+                  : "border-slate-300 bg-transparent text-muted-foreground opacity-60 hover:opacity-100",
               )}
             >
               <span
@@ -261,26 +262,26 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                     {isExpanded && (
                       <TableRow className="hover:bg-transparent">
                         <TableCell colSpan={7} className="border-t-0 p-0">
-                          <div className="border-t-2 border-b-2 border-black/40 bg-muted/30 px-4 py-4">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-4 border-b border-black">
-                              <div className="border-r border-black pr-4 pb-4 sm:pb-0 sm:border-b sm:border-r-0 lg:border-b-0 lg:border-r">
+                          <div className="border-t-2 border-b-2 border-slate-300/40 bg-muted/30 px-4 py-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-4 border-b border-slate-300">
+                              <div className="border-r border-slate-300 pr-4 pb-4 sm:pb-0 sm:border-b sm:border-r-0 lg:border-b-0 lg:border-r">
                                 <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
                                   Job Number
                                 </div>
                                 <div className="text-base font-medium">{job.number}</div>
                               </div>
-                              <div className="border-r border-black pr-4 sm:pl-4 pb-4 sm:pb-0 sm:border-b sm:border-r-0 lg:border-b-0 lg:border-r lg:pr-4 lg:pl-0">
+                              <div className="border-r border-slate-300 pr-4 sm:pl-4 pb-4 sm:pb-0 sm:border-b sm:border-r-0 lg:border-b-0 lg:border-r lg:pr-4 lg:pl-0">
                                 <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
                                   Client
                                 </div>
                                 <div className="text-base">{job.client_name}</div>
                               </div>
-                              <div className="border-r border-black pr-4 lg:pl-4">
+                              <div className="border-r border-slate-300 pr-4 lg:pl-4">
                                 <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
                                   Status
                                 </div>
                                 <span
-                                  className="font-bold uppercase tracking-[0.04em] text-[10px]"
+                                  className="font-bold uppercase tracking-[0.04em] text-base"
                                   style={{ color: STATUS_TEXT_COLOR[job.status] }}
                                 >
                                   {STATUS_LABEL[job.status]}
@@ -300,7 +301,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                                 </button>
                               </div>
                             </div>
-                            <div className="pt-4 border-t border-b border-black">
+                            <div className="pt-4 border-t border-b border-slate-300">
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
                                 <div>
                                   <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
@@ -322,13 +323,21 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                               </div>
                             </div>
                             {(job as Job).notes && (
-                              <div className="pt-4 border-t border-black">
+                              <div className="pt-4 border-t border-slate-300">
                                 <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
                                   Notes
                                 </div>
                                 <div className="text-base text-foreground leading-relaxed">{(job as Job).notes}</div>
                               </div>
                             )}
+                            <div className="flex justify-end pt-3">
+                              <Link
+                                href={`/dashboard/jobs/${job.id}`}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg bg-[#c0392b] text-white hover:bg-[#a93226] transition-colors"
+                              >
+                                View Full Job
+                              </Link>
+                            </div>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -355,7 +364,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
             return (
               <div className="space-y-3">
                 {supervisor && (
-                  <div className="flex items-center gap-3 pb-3 border-b-2 border-black/40">
+                  <div className="flex items-center gap-3 pb-3 border-b-2 border-slate-300/40">
                     <Avatar className="h-10 w-10">
                       <AvatarFallback>{supervisor.initials}</AvatarFallback>
                     </Avatar>

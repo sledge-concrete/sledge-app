@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, MapPin } from "lucide-react";
+import { ArrowLeft, MapPin, ChevronDown, Grid3x3, Clock, FileText, Image, TrendingUp } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,9 @@ import { UploadZone } from "@/components/jobs/upload-zone";
 import { DocumentsTable } from "@/components/jobs/documents-table";
 import { PhotoGallery } from "@/components/jobs/photo-gallery";
 import { ActivityFeed } from "@/components/jobs/activity-feed";
+import { ActivitySection } from "@/components/jobs/activity-section";
+import { EmployeeHoursBreakdown } from "@/components/jobs/employee-hours-breakdown";
+import { JobLocationMapWrapper } from "@/components/jobs/job-location-map-wrapper";
 
 const statusClass = {
   active: "sledge-status-active",
@@ -39,7 +42,7 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
     <div>
       <Link
         href="/dashboard/jobs"
-        className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "mb-3 -ml-2 inline-flex")}
+        className={cn(buttonVariants({ variant: "ghost", size: "md" }), "mb-3 -ml-2 inline-flex")}
       >
         <ArrowLeft className="mr-1 h-4 w-4" /> All Jobs
       </Link>
@@ -48,7 +51,14 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-3xl font-medium tracking-tight md:text-4xl">{job.name}</h1>
-            <Badge className={cn(statusClass[job.status], "font-medium uppercase tracking-[0.04em] text-[10px]")}>{job.status}</Badge>
+            <Badge
+              className="font-medium uppercase tracking-[0.04em] text-[8px] rounded-lg text-white"
+              style={{
+                backgroundColor: job.status === 'active' ? '#10b981' : job.status === 'hold' ? '#f59e0b' : '#6b7280'
+              }}
+            >
+              {job.status}
+            </Badge>
           </div>
           <p className="mt-1 flex items-center gap-1 text-base sledge-meta">
             <MapPin className="h-4 w-4" /> {job.address}
@@ -65,17 +75,34 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 sm:w-auto sm:grid-cols-5">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="hours">Hours</TabsTrigger>
-          <TabsTrigger value="documents">Documents</TabsTrigger>
-          <TabsTrigger value="photos">Photos</TabsTrigger>
-          <TabsTrigger value="activity">Activity</TabsTrigger>
-        </TabsList>
+        <div className="bg-[#2a2a2a] w-full flex justify-center py-4">
+          <TabsList className="flex gap-8 bg-transparent border-0">
+          <TabsTrigger value="overview" className="text-base rounded-full bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2 data-[state=active]:px-5">
+            <Grid3x3 className="h-5 w-5" />
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="hours" className="text-base rounded-full bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
+            <Clock className="h-5 w-5" />
+            Hours
+          </TabsTrigger>
+          <TabsTrigger value="documents" className="text-base rounded-full bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
+            <FileText className="h-5 w-5" />
+            Documents
+          </TabsTrigger>
+          <TabsTrigger value="photos" className="text-base rounded-full bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
+            <Image className="h-5 w-5" />
+            Photos
+          </TabsTrigger>
+          <TabsTrigger value="activity" className="text-base rounded-full bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
+            <TrendingUp className="h-5 w-5" />
+            Activity
+          </TabsTrigger>
+          </TabsList>
+        </div>
 
-        <TabsContent value="overview" className="mt-6">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
+        <TabsContent value="overview" className="mt-6 animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className="grid gap-4 md:grid-cols-2 auto-rows-max">
+            <Card className="h-fit">
               <CardHeader>
                 <CardTitle className="text-lg">Crew on this job</CardTitle>
               </CardHeader>
@@ -97,53 +124,44 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
                 </ul>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Recent activity</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ActivityFeed entries={jobActivity.slice(0, 4)} />
+            <Card className="h-fit">
+              <CardContent className="pt-0 px-6 pb-6">
+                <ActivitySection activities={jobActivity} />
               </CardContent>
             </Card>
           </div>
+          <Card className="mt-4">
+            <CardHeader>
+              <CardTitle className="text-lg">Location</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <JobLocationMapWrapper job={job} />
+            </CardContent>
+          </Card>
         </TabsContent>
 
-        <TabsContent value="hours" className="mt-6">
+        <TabsContent value="hours" className="mt-6 animate-in fade-in slide-in-from-top-4 duration-300">
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Hours by employee</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2">
-                {employees
-                  .filter((e) => job.crew.includes(e.id) || e.id === job.supervisorId)
-                  .map((e) => (
-                    <li key={e.id} className="flex items-center justify-between rounded-md border px-3 py-2">
-                      <span className="text-base font-medium">{e.name}</span>
-                      <span className="text-base text-muted-foreground">
-                        {Math.floor(job.hoursLogged / (job.crew.length + 1))} hrs
-                      </span>
-                    </li>
-                  ))}
-              </ul>
-              <p className="mt-3 text-xs text-muted-foreground">
-                Mock split. Real breakdown wires to Time Tracking module.
-              </p>
+              <EmployeeHoursBreakdown currentJob={job} employees={employees} />
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="documents" className="mt-6 space-y-4">
+        <TabsContent value="documents" className="mt-6 space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
           <UploadZone jobName={job.name} />
           <DocumentsTable docs={jobDocs} />
         </TabsContent>
 
-        <TabsContent value="photos" className="mt-6 space-y-4">
+        <TabsContent value="photos" className="mt-6 space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
           <UploadZone jobName={job.name} />
           <PhotoGallery photos={jobPhotos} />
         </TabsContent>
 
-        <TabsContent value="activity" className="mt-6">
+        <TabsContent value="activity" className="mt-6 animate-in fade-in slide-in-from-top-4 duration-300">
           <ActivityFeed entries={jobActivity} />
         </TabsContent>
       </Tabs>

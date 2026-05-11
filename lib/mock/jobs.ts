@@ -292,8 +292,12 @@ export const photos: JobPhoto[] = [
 
 export const activity: ActivityEntry[] = [
   { id: "a-1", jobId: "job-riverfront", type: "clock-in", actor: "u-mike", at: "2026-05-07T07:02:00", detail: "Clocked in" },
-  { id: "a-2", jobId: "job-riverfront", type: "upload", actor: "u-mike", at: "2026-05-04T16:11:00", detail: "Uploaded pour-day-east.jpg" },
-  { id: "a-3", jobId: "job-riverfront", type: "sign-off", actor: "u-sarah", at: "2026-05-04T07:30:00", detail: "Daily safety sign-off" },
+  { id: "a-2", jobId: "job-riverfront", type: "note", actor: "u-sarah", at: "2026-05-06T16:30:00", detail: "Weather delays expected tomorrow due to rain forecast. May need to reschedule concrete pour to next week." },
+  { id: "a-3", jobId: "job-riverfront", type: "upload", actor: "u-mike", at: "2026-05-04T16:11:00", detail: "Uploaded pour-day-east.jpg" },
+  { id: "a-4", jobId: "job-riverfront", type: "sign-off", actor: "u-sarah", at: "2026-05-04T07:30:00", detail: "Daily safety sign-off" },
+  { id: "a-5", jobId: "job-riverfront", type: "note", actor: "u-mike", at: "2026-05-03T15:45:00", detail: "East footing excavation complete. Ready for rebar placement on Monday." },
+  { id: "a-6", jobId: "job-riverfront", type: "note", actor: "u-jake", at: "2026-05-02T14:20:00", detail: "Materials delivered: 50 cu yards of ready-mix concrete. Stored at site north corner." },
+  { id: "a-7", jobId: "job-riverfront", type: "note", actor: "u-sarah", at: "2026-04-30T10:15:00", detail: "Client site walk-through completed. Approved foundation layout. No changes needed." },
   { id: "a-4", jobId: "job-maple", type: "note", actor: "u-sarah", at: "2026-05-06T14:00:00", detail: "Foundation inspection scheduled" },
   { id: "a-5", jobId: "job-hwy2", type: "clock-out", actor: "u-tanya", at: "2026-04-20T17:00:00", detail: "Clocked out" },
 ];

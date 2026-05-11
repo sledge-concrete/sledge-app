@@ -83,12 +83,12 @@
   --sidebar-ring: #c0392b;
 
   /* Status tokens */
-  --status-active-bg: #edf7ed;
-  --status-active-fg: #2e7d32;
-  --status-hold-bg: #fff8e1;
-  --status-hold-fg: #f57f17;
-  --status-completed-bg: #ede8e8;
-  --status-completed-fg: #2d1a1a;
+  --status-active-bg: #10b981;
+  --status-active-fg: #ffffff;
+  --status-hold-bg: #f59e0b;
+  --status-hold-fg: #ffffff;
+  --status-completed-bg: #6b7280;
+  --status-completed-fg: #ffffff;
 
   /* Role badge */
   --role-badge-bg: #1a1a1a;
