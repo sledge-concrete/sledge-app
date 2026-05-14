@@ -34,3 +34,24 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Progress Log
+
+### Browser Tab Favicon
+
+- Added an App Router `app/icon.svg` sledge hammer icon so browsers can use an SVG tab favicon while keeping the existing `.ico` fallback.
+
+### Safety Detail Back Link
+
+- Doubled the Safety back-link label size on the safety job detail view for better readability.
+
+### Safety Detail Flow
+
+- Reworked the job safety detail view around a large daily Safety Sign-Off action, current-day signature collection, and an expandable previous-sheets table.
+
+### Safety Sign-off Module
+
+- Added FLHA domain types and mock data for `flha_sessions` and `flha_signatures`, including the requested Riverfront, Maple Street, and Highway 2 scenarios.
+- Added tablet-first routes for `/dashboard/safety`, `/dashboard/safety/[jobId]`, and `/dashboard/safety/review`.
+- Digitized the FLHA header fields, hazard checklist, required controls checklist, comments, validation, read-only submitted view, worker signature flow, review table, and on-demand PDF export with `@react-pdf/renderer`.
+- Mock persistence is browser-local through `localStorage`; no real database writes have been added yet.
