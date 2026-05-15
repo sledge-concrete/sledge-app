@@ -37,6 +37,13 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Progress Log
 
+### Time Tracking Module
+
+- Replaced the Time module shell with a mock-data time tracking dashboard for clock in/out, manual daily entries, split-shift entries, time-off requests, approvals, and recent entries.
+- Added local browser persistence for time tracking test flows using the same `localStorage` pattern as the Safety module.
+- Added time tracking seed data and domain types to help validate the future database shape before wiring real persistence.
+- Note: time-off requests may move into Scheduling later, but remain on Time Tracking for now to test request and approval data flow.
+
 ### Browser Tab Favicon
 
 - Added an App Router `app/icon.svg` sledge hammer icon so browsers can use an SVG tab favicon while keeping the existing `.ico` fallback.
