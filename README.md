@@ -37,6 +37,14 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Progress Log
 
+### Daily Reports Aggregate Flow
+
+- Reworked the Daily Reports landing page around one signed daily report per date instead of bulky per-job report cards.
+- Added a large Generate Daily Report action with a modal form, blurred backdrop, date picker, supervisor selector, progress summaries, and supervisor signature.
+- Auto-fills worked sites from time entries and active clock-ins for the selected date, including multi-site employee hours.
+- Auto-fills weather snapshots through the Open-Meteo API and safety summaries from matching FLHA sessions.
+- Added local browser persistence for generated daily aggregate reports while real database storage is still pending.
+
 ### Time Tracking Module
 
 - Replaced the Time module shell with a mock-data time tracking dashboard for clock in/out, manual daily entries, split-shift entries, time-off requests, approvals, and recent entries.
