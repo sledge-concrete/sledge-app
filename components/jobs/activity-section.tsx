@@ -5,11 +5,11 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import type { JobActivity } from "@/lib/mock/types";
+import type { ActivityEntry } from "@/lib/mock/types";
 import { ActivityFeed } from "./activity-feed";
 
 type Props = {
-  activities: JobActivity[];
+  activities: ActivityEntry[];
 };
 
 export function ActivitySection({ activities }: Props) {
@@ -20,7 +20,7 @@ export function ActivitySection({ activities }: Props) {
   const handleAddActivity = () => {
     if (!note.trim()) return;
 
-    const newActivity: JobActivity = {
+    const newActivity: ActivityEntry = {
       id: `a-${Date.now()}`,
       jobId: activities[0]?.jobId || "",
       type: "note",
