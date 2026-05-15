@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { jobs, documents, photos, activity } from "@/lib/mock/jobs";
 import { getEmployee, employees } from "@/lib/mock/employees";
-import { getJobDetailByLegacyId } from "@/lib/supabase/jobs";
+import { getJobDetailByLegacyId, getJobDetailByUUID } from "@/lib/supabase/jobs";
 import { UploadZone } from "@/components/jobs/upload-zone";
 import { DocumentsTable } from "@/components/jobs/documents-table";
 import { PhotoGallery } from "@/components/jobs/photo-gallery";
@@ -30,7 +30,10 @@ export function generateStaticParams() {
 
 export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[id]">) {
   const { id } = await props.params;
-  const supabaseDetail = await getJobDetailByLegacyId(id);
+  let supabaseDetail = await getJobDetailByUUID(id);
+  if (!supabaseDetail) {
+    supabaseDetail = await getJobDetailByLegacyId(id);
+  }
   const fallbackJob = jobs.find((j) => j.id === id);
   const job = supabaseDetail?.job ?? fallbackJob;
   if (!job) notFound();
@@ -46,9 +49,9 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
     <div>
       <Link
         href="/dashboard/jobs"
-        className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "mb-3 -ml-2 inline-flex")}
+        className={cn(buttonVariants({ variant: "ghost", size: "lg" }), "mb-3 -ml-2 inline-flex text-lg")}
       >
-        <ArrowLeft className="mr-1 h-4 w-4" /> All Jobs
+        <ArrowLeft className="mr-1 h-5 w-5" /> Back to All Sites
       </Link>
 
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -56,7 +59,7 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
           <div className="flex items-center gap-2">
             <h1 className="text-3xl font-medium tracking-tight md:text-4xl">{job.name}</h1>
             <Badge
-              className="font-medium uppercase tracking-[0.04em] text-[8px] rounded-lg text-white"
+              className="font-medium uppercase tracking-[0.04em] text-sm rounded-lg text-white px-3 py-1"
               style={{
                 backgroundColor: job.status === 'active' ? '#10b981' : job.status === 'hold' ? '#f59e0b' : '#6b7280'
               }}
@@ -79,25 +82,25 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <div className="bg-[#2a2a2a] w-full flex justify-center py-4">
-          <TabsList className="flex gap-8 bg-transparent border-0">
-          <TabsTrigger value="overview" className="text-base rounded-full bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2 data-[state=active]:px-5">
+        <div className="bg-[#2a2a2a] w-full py-4">
+          <TabsList className="w-full flex justify-between bg-transparent border-0">
+          <TabsTrigger value="overview" className="text-lg rounded-lg bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2 data-[state=active]:px-5">
             <Grid3x3 className="h-5 w-5" />
             Overview
           </TabsTrigger>
-          <TabsTrigger value="hours" className="text-base rounded-full bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
+          <TabsTrigger value="hours" className="text-lg rounded-lg bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
             <Clock className="h-5 w-5" />
             Hours
           </TabsTrigger>
-          <TabsTrigger value="documents" className="text-base rounded-full bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
+          <TabsTrigger value="documents" className="text-lg rounded-lg bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
             <FileText className="h-5 w-5" />
             Documents
           </TabsTrigger>
-          <TabsTrigger value="photos" className="text-base rounded-full bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
+          <TabsTrigger value="photos" className="text-lg rounded-lg bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
             <Image className="h-5 w-5" />
             Photos
           </TabsTrigger>
-          <TabsTrigger value="activity" className="text-base rounded-full bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
+          <TabsTrigger value="activity" className="text-lg rounded-lg bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
             <TrendingUp className="h-5 w-5" />
             Activity
           </TabsTrigger>
@@ -130,7 +133,7 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
             </Card>
             <Card className="h-fit">
               <CardContent className="pt-0 px-6 pb-6">
-                <ActivitySection activities={jobActivity} />
+                <ActivitySection activities={jobActivity} jobId={id} />
               </CardContent>
             </Card>
           </div>

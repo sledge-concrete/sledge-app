@@ -24,11 +24,11 @@ export function ActivityFeed({ entries }: { entries: ActivityEntry[] }) {
               <Icon className="h-4 w-4 text-muted-foreground" />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-sm">
+              <div className="text-base">
                 <span className="font-medium">{getEmployee(e.actor)?.name ?? "—"}</span>
                 <span className="ml-2 text-muted-foreground">{e.detail}</span>
               </div>
-              <div className="text-xs text-muted-foreground">{new Date(e.at).toLocaleString()}</div>
+              <div className="text-sm text-muted-foreground">{new Date(e.at).toLocaleString()}</div>
             </div>
           </li>
         );

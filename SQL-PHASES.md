@@ -307,11 +307,40 @@ Resolved recommendations for Phase 1:
 - Verified `npx next build` passes after the detail read wiring and map wrapper fix.
 - Create Site inserts, activity writes, documents/photos, time tracking, safety, and daily reports remain pending.
 
+### 2026-05-15 - Phase 2.2 Create Site Insert Path Complete
+
+- Added migration `supabase/migrations/20260515200000_phase_2_2_jobs_insert_policy.sql` with INSERT RLS policy for anon/authenticated roles.
+- Implemented `insertJob()` Supabase helper function with null-safe error handling.
+- Built `POST /api/jobs` API route with server-side job number generation (SC-YYYY-NNN format, incremented from DB max).
+- Updated Create Site dialog to collect Client Name and Start Date (previously hardcoded).
+- Wired Create Site form to POST to `/api/jobs` — fully Supabase-backed persistence (no silent mock fallback for writes).
+- Added GPS coordinate auto-population to address field (format: "lat, lng").
+- Integrated toast notification (sonner) on successful creation with auto-dismiss.
+- Added `getJobDetailByUUID()` function to support UUID-based job lookups for newly created sites.
+- Updated job detail page routing to try UUID lookup first, then legacy ID — resolves 404 errors on new sites.
+- Phase 2.2 verified: new sites created through dialog appear in jobs list, read from Supabase.
+
+### 2026-05-15 - Phase 2.3 Job Activity Insert Path Complete
+
+- Added migration `supabase/migrations/20260515210000_phase_2_3_job_activity_insert_policy.sql` with INSERT RLS policy for anon/authenticated roles.
+- Fixed missing GRANT in follow-up migration `20260515211000_fix_job_activity_insert_grant.sql` (`grant insert on public.job_activity to anon, authenticated;`).
+- Implemented `insertJobActivity()` Supabase helper in `lib/supabase/jobs.ts` to insert note-type activities with occurred_at and detail.
+- Built `POST /api/jobs/[jobId]/activity` route with UUID/legacy ID resolution — accepts either format, resolves to UUID before insert.
+- Updated `ActivitySection` component to POST to the activity route with loading states, error/success toasts, and refetch on insert.
+- Updated job detail page to pass `jobId` parameter to `ActivitySection`.
+- Verified end-to-end: activity notes POST successfully, persist to Supabase, and are retrieved on page load.
+- Phase 2.3 verified: new activities created via dialog appear in activity feed, read from Supabase on next detail page load.
+
+## Phase 2 Complete
+
+- Jobs list reads from Supabase (sorted newest first).
+- Job detail reads from Supabase (job, crew, supervisor, employees, activity).
+- Create Site persists to Supabase.
+- Job activity notes persist to Supabase.
+- Phase 2 read/write flow is fully Supabase-backed.
+
 ## Next Database Tasks
 
-1. Create Site insert path.
-2. Decide whether Create Site should write only `jobs` first or also support initial crew assignment in `job_crew`.
-3. Add a server route or server action for Create Site writes using the existing Supabase server helper.
-4. Keep mock fallback until creating a site can be verified in Supabase.
-5. Add a cleanup/testing query for seed data by `seed_batch` before production planning.
-6. After Create Site, wire job activity inserts and decide whether activity notes are enough before document/photo Storage work.
+1. Add a cleanup/testing query for seed data by `seed_batch` before production planning.
+2. Phase 3: Time Tracking tables and persistence.
+3. Phase 4: Safety/FLHA normalized tables.

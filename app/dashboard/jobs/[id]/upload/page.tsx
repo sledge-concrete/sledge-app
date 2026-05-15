@@ -20,9 +20,9 @@ export default async function JobUploadPage(props: PageProps<"/dashboard/jobs/[i
     <div className="mx-auto max-w-2xl">
       <Link
         href="/dashboard/jobs"
-        className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "mb-3 -ml-2 inline-flex")}
+        className={cn(buttonVariants({ variant: "ghost", size: "lg" }), "mb-3 -ml-2 inline-flex text-lg")}
       >
-        <ArrowLeft className="mr-1 h-4 w-4" /> All Jobs
+        <ArrowLeft className="mr-1 h-5 w-5" /> Back to All Sites
       </Link>
 
       <div className="mb-4">

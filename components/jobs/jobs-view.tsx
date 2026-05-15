@@ -104,7 +104,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
             className="pl-9"
           />
         </div>
-        <Badge variant="secondary" className="font-medium rounded-lg">
+        <Badge variant="secondary" className="font-medium text-base rounded-md px-4 py-2">
           {visibleJobs.length} {visibleJobs.length === 1 ? "job" : "jobs"}
         </Badge>
       </div>
@@ -116,7 +116,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
       </div>
 
       <div>
-        <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
+        <div className="text-base uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
           Filter by status
         </div>
         <div className="flex flex-wrap gap-2">
@@ -128,7 +128,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
               type="button"
               onClick={() => toggleFilter(s)}
               className={cn(
-                "inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors",
+                "inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors",
                 on
                   ? "border-foreground/15 bg-foreground/5 text-foreground"
                   : "border-slate-300 bg-transparent text-muted-foreground opacity-60 hover:opacity-100",
@@ -155,25 +155,25 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
           <Table>
             <TableHeader className="bg-[#1a1a1a] [&_tr]:border-b-0">
               <TableRow className="hover:bg-[#1a1a1a]">
-                <TableHead className="w-[28%] h-11 px-6 text-sm font-semibold uppercase tracking-[0.08em] text-white/80">
+                <TableHead className="w-[28%] h-12 px-6 text-base font-semibold uppercase tracking-[0.08em] text-white/80">
                   Job
                 </TableHead>
-                <TableHead className="hidden h-11 text-sm font-semibold uppercase tracking-[0.08em] text-white/80 md:table-cell">
+                <TableHead className="hidden h-12 text-base font-semibold uppercase tracking-[0.08em] text-white/80 md:table-cell">
                   Number
                 </TableHead>
-                <TableHead className="h-11 text-center text-sm font-semibold uppercase tracking-[0.08em] text-white/80">
+                <TableHead className="h-12 text-center text-base font-semibold uppercase tracking-[0.08em] text-white/80">
                   Status
                 </TableHead>
-                <TableHead className="hidden h-11 text-center text-sm font-semibold uppercase tracking-[0.08em] text-white/80 sm:table-cell">
+                <TableHead className="hidden h-12 text-center text-base font-semibold uppercase tracking-[0.08em] text-white/80 sm:table-cell">
                   Crew
                 </TableHead>
-                <TableHead className="hidden h-11 text-sm font-semibold uppercase tracking-[0.08em] text-white/80 lg:table-cell">
+                <TableHead className="hidden h-12 text-base font-semibold uppercase tracking-[0.08em] text-white/80 lg:table-cell">
                   Client
                 </TableHead>
-                <TableHead className="hidden h-11 text-sm font-semibold uppercase tracking-[0.08em] text-white/80 md:table-cell">
+                <TableHead className="hidden h-12 text-base font-semibold uppercase tracking-[0.08em] text-white/80 md:table-cell">
                   Address
                 </TableHead>
-                <TableHead className="h-11 px-6 text-center text-sm font-semibold uppercase tracking-[0.08em] text-white/80">
+                <TableHead className="h-12 px-6 text-center text-base font-semibold uppercase tracking-[0.08em] text-white/80">
                   Files
                 </TableHead>
               </TableRow>
@@ -265,30 +265,30 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                           <div className="border-t-2 border-b-2 border-slate-300/40 bg-muted/30 px-4 py-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-4 border-b border-slate-300">
                               <div className="border-r border-slate-300 pr-4 pb-4 sm:pb-0 sm:border-b sm:border-r-0 lg:border-b-0 lg:border-r">
-                                <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
+                                <div className="text-sm uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
                                   Job Number
                                 </div>
                                 <div className="text-base font-medium">{job.number}</div>
                               </div>
                               <div className="border-r border-slate-300 pr-4 sm:pl-4 pb-4 sm:pb-0 sm:border-b sm:border-r-0 lg:border-b-0 lg:border-r lg:pr-4 lg:pl-0">
-                                <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
+                                <div className="text-sm uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
                                   Client
                                 </div>
                                 <div className="text-base">{job.client_name}</div>
                               </div>
                               <div className="border-r border-slate-300 pr-4 lg:pl-4">
-                                <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
+                                <div className="text-sm uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
                                   Status
                                 </div>
                                 <span
-                                  className="font-bold uppercase tracking-[0.04em] text-base"
+                                  className="font-bold uppercase tracking-[0.04em] text-sm"
                                   style={{ color: STATUS_TEXT_COLOR[job.status] }}
                                 >
                                   {STATUS_LABEL[job.status]}
                                 </span>
                               </div>
                               <div className="lg:pl-4">
-                                <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
+                                <div className="text-sm uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-1">
                                   Crew
                                 </div>
                                 <button
@@ -304,7 +304,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                             <div className="pt-4 border-t border-b border-slate-300">
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
                                 <div>
-                                  <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
+                                  <div className="text-sm uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
                                     Location
                                   </div>
                                   <div className="flex items-start gap-2 text-base">
@@ -314,7 +314,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                                 </div>
                                 {(job as Job).service_type && (
                                   <div>
-                                    <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
+                                    <div className="text-sm uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
                                       Service Type
                                     </div>
                                     <div className="text-base">{(job as Job).service_type}</div>
@@ -324,7 +324,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                             </div>
                             {(job as Job).notes && (
                               <div className="pt-4 border-t border-slate-300">
-                                <div className="text-[10px] uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
+                                <div className="text-sm uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
                                   Notes
                                 </div>
                                 <div className="text-base text-foreground leading-relaxed">{(job as Job).notes}</div>
@@ -333,7 +333,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
                             <div className="flex justify-end pt-3">
                               <Link
                                 href={`/dashboard/jobs/${job.id}`}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg bg-[#c0392b] text-white hover:bg-[#a93226] transition-colors"
+                                className="inline-flex items-center gap-1.5 px-5 py-2.5 text-base font-medium rounded-lg bg-[#c0392b] text-white hover:bg-[#a93226] transition-colors"
                               >
                                 View Full Job
                               </Link>

@@ -21,9 +21,10 @@ export function JobsPageClient({ initialJobs }: { initialJobs: JobsApiItem[] }) 
       <PageHeader
         title="Sites"
         description="Map view of every job site. Tap a pin or card to focus, double-tap to open."
+        className="sm:items-center"
         action={
-          <Button onClick={() => setDialogOpen(true)}>
-            <Plus className="mr-1 h-4 w-4" /> New Site
+          <Button onClick={() => setDialogOpen(true)} className="h-10 px-4 text-lg sm:h-11 sm:px-5">
+            <Plus className="mr-1.5 h-4 w-4 sm:h-5 sm:w-5" /> New Site
           </Button>
         }
       />
