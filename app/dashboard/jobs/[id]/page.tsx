@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { jobs, documents, photos, activity } from "@/lib/mock/jobs";
 import { getEmployee, employees } from "@/lib/mock/employees";
+import { getJobDetailByLegacyId } from "@/lib/supabase/jobs";
 import { UploadZone } from "@/components/jobs/upload-zone";
 import { DocumentsTable } from "@/components/jobs/documents-table";
 import { PhotoGallery } from "@/components/jobs/photo-gallery";
@@ -29,14 +30,17 @@ export function generateStaticParams() {
 
 export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[id]">) {
   const { id } = await props.params;
-  const job = jobs.find((j) => j.id === id);
+  const supabaseDetail = await getJobDetailByLegacyId(id);
+  const fallbackJob = jobs.find((j) => j.id === id);
+  const job = supabaseDetail?.job ?? fallbackJob;
   if (!job) notFound();
 
-  const supervisor = getEmployee(job.supervisorId);
-  const crew = job.crew.map((cid) => getEmployee(cid)).filter(Boolean);
+  const supervisor = supabaseDetail?.supervisor ?? getEmployee(job.supervisorId);
+  const crew = supabaseDetail?.crew ?? job.crew.map((cid) => getEmployee(cid)).filter(Boolean);
+  const jobEmployees = supabaseDetail?.employees ?? employees;
   const jobDocs = documents.filter((d) => d.jobId === job.id);
   const jobPhotos = photos.filter((p) => p.jobId === job.id);
-  const jobActivity = activity.filter((a) => a.jobId === job.id);
+  const jobActivity = supabaseDetail?.activity ?? activity.filter((a) => a.jobId === job.id);
 
   return (
     <div>
@@ -146,7 +150,7 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
               <CardTitle className="text-lg">Hours by employee</CardTitle>
             </CardHeader>
             <CardContent>
-              <EmployeeHoursBreakdown currentJob={job} employees={employees} />
+              <EmployeeHoursBreakdown currentJob={job} employees={jobEmployees} />
             </CardContent>
           </Card>
         </TabsContent>

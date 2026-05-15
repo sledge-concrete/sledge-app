@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { employees } from "@/lib/mock/employees";
@@ -265,13 +266,18 @@ export function DailyReportsClient() {
                   <Input type="date" value={selectedDate} onChange={(event) => handleDateChange(event.target.value)} className="min-h-11" required />
                 </Field>
                 <Field label="Supervisor">
-                  <NativeSelect value={supervisorId} onChange={setSupervisorId}>
-                    {reportPeople.map((employee) => (
-                      <option key={employee.id} value={employee.id}>
-                        {employee.name}
-                      </option>
-                    ))}
-                  </NativeSelect>
+                  <Select value={supervisorId} onValueChange={(value) => value && setSupervisorId(value)}>
+                    <SelectTrigger className="min-h-11 w-full bg-background px-3">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent align="start" className="z-[60]">
+                      {reportPeople.map((employee) => (
+                        <SelectItem key={employee.id} value={employee.id}>
+                          {employee.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </Field>
                 <div className="rounded-lg border bg-muted/40 p-3">
                   <div className="text-xs font-medium uppercase tracking-[0.04em] text-muted-foreground">Auto-filled</div>
@@ -347,7 +353,7 @@ export function DailyReportsClient() {
               )}
             </div>
 
-            <DialogFooter className="px-5">
+            <DialogFooter className="mx-0 mb-0 px-5 py-4">
               <Button type="button" variant="outline" size="lg" className="min-h-11" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
@@ -572,26 +578,6 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
       <Label>{label}</Label>
       {children}
     </div>
-  );
-}
-
-function NativeSelect({
-  value,
-  onChange,
-  children,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  children: ReactNode;
-}) {
-  return (
-    <select
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      className="min-h-11 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-    >
-      {children}
-    </select>
   );
 }
 
