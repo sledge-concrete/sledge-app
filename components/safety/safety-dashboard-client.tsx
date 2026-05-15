@@ -18,12 +18,14 @@ export function SafetyDashboardClient() {
         title="Safety Sign-off"
         description="Daily Field Level Hazard Assessment sign-offs by job site."
         action={
-          <Link href="/dashboard/safety/review" className={buttonVariants({ variant: "outline", size: "lg", className: "min-h-11 px-4" })}>
-            <ClipboardCheck className="h-4 w-4" />
+          <Link href="/dashboard/safety/review" className={buttonVariants({ variant: "outline", size: "lg", className: "!h-14 !px-8 !text-lg" })}>
+            <ClipboardCheck className="h-6 w-6" />
             Review
           </Link>
         }
       />
+
+      <h3 className="mb-6 text-xl font-semibold text-slate-900">Active Sites</h3>
 
       <div className="grid gap-4 lg:grid-cols-3">
         {safetyJobs.map((job) => {

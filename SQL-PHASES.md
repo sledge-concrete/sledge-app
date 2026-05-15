@@ -307,11 +307,21 @@ Resolved recommendations for Phase 1:
 - Verified `npx next build` passes after the detail read wiring and map wrapper fix.
 - Create Site inserts, activity writes, documents/photos, time tracking, safety, and daily reports remain pending.
 
+### 2026-05-15 - Phase 2.2 Create Site Insert Path Complete
+
+- Added migration `supabase/migrations/20260515200000_phase_2_2_jobs_insert_policy.sql` with INSERT RLS policy for anon/authenticated roles.
+- Implemented `insertJob()` Supabase helper function with null-safe error handling.
+- Built `POST /api/jobs` API route with server-side job number generation (SC-YYYY-NNN format, incremented from DB max).
+- Updated Create Site dialog to collect Client Name and Start Date (previously hardcoded).
+- Wired Create Site form to POST to `/api/jobs` — fully Supabase-backed persistence (no silent mock fallback for writes).
+- Added GPS coordinate auto-population to address field (format: "lat, lng").
+- Integrated toast notification (sonner) on successful creation with auto-dismiss.
+- Added `getJobDetailByUUID()` function to support UUID-based job lookups for newly created sites.
+- Updated job detail page routing to try UUID lookup first, then legacy ID — resolves 404 errors on new sites.
+- Phase 2.2 verified: new sites created through dialog appear in jobs list, read from Supabase.
+
 ## Next Database Tasks
 
-1. Create Site insert path.
-2. Decide whether Create Site should write only `jobs` first or also support initial crew assignment in `job_crew`.
-3. Add a server route or server action for Create Site writes using the existing Supabase server helper.
-4. Keep mock fallback until creating a site can be verified in Supabase.
-5. Add a cleanup/testing query for seed data by `seed_batch` before production planning.
-6. After Create Site, wire job activity inserts and decide whether activity notes are enough before document/photo Storage work.
+1. Add a cleanup/testing query for seed data by `seed_batch` before production planning.
+2. Job activity insert path.
+3. Decide whether activity notes are enough or if documents/photos Storage work should happen first.

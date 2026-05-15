@@ -1,5 +1,5 @@
 import { createServerSupabaseClient } from "./server";
-import type { EmployeeRow, JobActivityRow, JobCrewRow, JobRow } from "./types";
+import type { EmployeeRow, JobActivityRow, JobCrewRow, JobInsertPayload, JobRow } from "./types";
 import type { ActivityEntry, Employee, Job } from "@/lib/mock/types";
 
 export type SupabaseJobDetail = {
@@ -11,6 +11,77 @@ export type SupabaseJobDetail = {
 };
 
 type SourceEmployee = Employee & { sourceId: string };
+
+export async function insertJob(payload: JobInsertPayload): Promise<JobRow | null> {
+  const supabase = createServerSupabaseClient();
+  if (!supabase) return null;
+
+  const { data, error } = await supabase
+    .from("jobs")
+    .insert(payload)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Supabase job insert failed.", error);
+    return null;
+  }
+
+  return data as JobRow;
+}
+
+export async function getJobDetailByUUID(jobId: string): Promise<SupabaseJobDetail | null> {
+  const supabase = createServerSupabaseClient();
+  if (!supabase) return null;
+
+  const { data: jobRow, error: jobError } = await supabase
+    .from("jobs")
+    .select("*")
+    .eq("id", jobId)
+    .maybeSingle();
+
+  if (jobError || !jobRow) {
+    if (jobError) console.error("Supabase job detail fetch failed.", jobError);
+    return null;
+  }
+
+  const [employeesResult, crewResult, activityResult] = await Promise.all([
+    supabase.from("employees").select("id, legacy_mock_id, name, role, email, initials"),
+    supabase
+      .from("job_crew")
+      .select("job_id, employee_id, role_on_job")
+      .eq("job_id", jobRow.id),
+    supabase
+      .from("job_activity")
+      .select("id, legacy_mock_id, activity_type, actor_employee_id, occurred_at, detail, job_id")
+      .eq("job_id", jobRow.id)
+      .order("occurred_at", { ascending: false }),
+  ]);
+
+  if (employeesResult.error || crewResult.error || activityResult.error) {
+    console.error("Supabase related job detail fetch failed.", {
+      employees: employeesResult.error,
+      crew: crewResult.error,
+      activity: activityResult.error,
+    });
+    return null;
+  }
+
+  const allEmployees = (employeesResult.data ?? []).map(mapEmployee);
+  const crew = ((crewResult.data ?? []) as JobCrewRow[])
+    .map((row) => allEmployees.find((employee) => employee.sourceId === row.employee_id))
+    .filter((employee): employee is SourceEmployee => !!employee);
+  const supervisor = allEmployees.find((employee) => employee.sourceId === jobRow.supervisor_employee_id);
+  const employeeByUuid = new Map(allEmployees.map((employee) => [employee.sourceId, employee]));
+
+  return {
+    job: mapJob(jobRow, supervisor, crew),
+    supervisor: supervisor ? stripSourceId(supervisor) : undefined,
+    crew: crew.map(stripSourceId),
+    employees: allEmployees.map(stripSourceId),
+    activity: ((activityResult.data ?? []) as JobActivityRow[]).map((row) => mapActivity(row, jobRow.id, employeeByUuid)),
+  };
+}
 
 export async function getJobDetailByLegacyId(legacyJobId: string): Promise<SupabaseJobDetail | null> {
   const supabase = createServerSupabaseClient();

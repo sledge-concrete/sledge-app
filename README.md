@@ -119,3 +119,30 @@ Current Supabase next steps:
 - Added tablet-first routes for `/dashboard/safety`, `/dashboard/safety/[jobId]`, and `/dashboard/safety/review`.
 - Digitized the FLHA header fields, hazard checklist, required controls checklist, comments, validation, read-only submitted view, worker signature flow, review table, and on-demand PDF export with `@react-pdf/renderer`.
 - Mock persistence is browser-local through `localStorage`; no real database writes have been added yet.
+
+### Phase 2.2 Create Site Insert & Safety Fixes (2026-05-15)
+
+**Safety Sign-off Fixes:**
+- Fixed edit flow: preserved `session_date` in form defaults so editing existing sessions updates instead of creating new ones.
+
+**Create Site Insert Path (Supabase Phase 2.2):**
+- Created `supabase/migrations/20260515200000_phase_2_2_jobs_insert_policy.sql` — grants INSERT on `jobs` table to anon/authenticated roles.
+- Added `insertJob()` helper in `lib/supabase/jobs.ts` for Supabase writes.
+- Implemented `POST /api/jobs` handler with server-side job number generation (SC-YYYY-NNN format).
+- Enhanced Create Site dialog: added Client Name + Start Date fields, GPS coordinate auto-population, error handling, loading states.
+- Wired dialog to call API instead of in-memory mock — real Supabase persistence.
+- Added toast notification on successful site creation (sonner) with checkmark icon, auto-dismiss after 4s.
+- Dialog closes immediately on success instead of delayed close.
+
+**Job Detail UUID Lookup:**
+- Added `getJobDetailByUUID()` function to handle Supabase-created jobs (UUID-based IDs).
+- Updated job detail page to try UUID lookup first, then legacy ID fallback — fixes 404 for newly created sites.
+
+**UI & Styling Updates:**
+- Replaced all red colors with brand color `#c0392b` across Create Site dialog (title, button, error box, delete button, select focus rings, file upload hover).
+- Increased font sizes: "Active Sites" label, Review button, "New Site" button, "Back to All Sites" link, status badge on job detail, activity feed text, Add Site Note dialog title.
+- Changed job detail tab navigation: pill-shaped (`rounded-full`) → rectangular with rounded corners (`rounded-lg`).
+- Enlarged "Add Site Note" dialog: `max-w-lg` → `max-w-4xl`, textarea `min-h-24` → `min-h-40`, fonts increased across title/textarea/buttons.
+- Increased textarea font to 18px with inline style.
+- Changed jobs list sort order: ascending by job_number → descending by created_at (newest first).
+- GPS button now populates address field with coordinate string (lat, lng format).

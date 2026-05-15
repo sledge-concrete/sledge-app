@@ -153,6 +153,7 @@ export function SafetyJobDetailClient({ job }: { job: Job }) {
                               other_hazards: session.other_hazards,
                               other_controls: session.other_controls,
                               comments: session.comments,
+                              session_date: session.session_date,
                             }}
                             onCancel={() => setExpandedHistoryId(undefined)}
                             onSubmit={(values) => {

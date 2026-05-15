@@ -65,6 +65,20 @@ export type JobActivityRow = {
   detail: string;
 };
 
+export type JobInsertPayload = {
+  name: string;
+  job_number: string;
+  client_name: string;
+  address: string;
+  status: "active" | "hold" | "completed";
+  start_date: string;
+  latitude: number;
+  longitude: number;
+  service_type?: string | null;
+  notes?: string | null;
+  is_seed_data: false;
+};
+
 export type Database = {
   public: {
     Tables: {

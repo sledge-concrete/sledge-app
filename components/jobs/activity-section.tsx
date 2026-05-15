@@ -53,29 +53,30 @@ export function ActivitySection({ activities }: Props) {
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="w-[95vw] max-w-lg">
+        <DialogContent className="w-[95vw] max-w-4xl">
           <DialogHeader>
-            <DialogTitle>Add Site Note</DialogTitle>
+            <DialogTitle className="text-xl">Add Site Note</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <Textarea
               placeholder="Add notes, updates, or activity for this job..."
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className="min-h-24"
+              className="min-h-40"
+              style={{ fontSize: "18px" }}
             />
             <div className="flex gap-2 justify-end">
               <Button
                 variant="outline"
                 onClick={() => setIsOpen(false)}
-                className="rounded-lg"
+                className="rounded-lg text-base h-10 px-4"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleAddActivity}
                 disabled={!note.trim()}
-                className="bg-[#c0392b] hover:bg-[#a93226] text-white rounded-lg"
+                className="bg-[#c0392b] hover:bg-[#a93226] text-white rounded-lg text-base h-10 px-4"
               >
                 Save Activity
               </Button>
