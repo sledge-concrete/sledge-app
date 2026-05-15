@@ -30,12 +30,14 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - Use normalized rows for long-term reporting data, especially safety/FLHA, daily reports, and time tracking.
 - Signatures and uploaded files should move to Supabase Storage in a later phase, with SQL metadata.
 
-## Current Supabase Status
+## Current Supabase Status (as of 2026-05-15)
 
 - Phase 0 Supabase project setup is complete.
-- Phase 1 core tables are complete: `employees`, `jobs`, `job_crew`, `job_activity`.
-- Phase 1 seed data has been inserted and verified in the remote Supabase project.
-- Phase 2 read policies are pushed and verified.
-- Jobs list reads from `jobs_list_view` through `/api/jobs`, with mock fallback.
-- Job Detail now reads job, supervisor, crew, employees, and activity from Supabase, with mock fallback.
-- Create Site inserts, job activity writes, documents/photos storage, time tracking, safety, daily reports, and auth are still pending.
+- Phase 1 core tables complete: `employees`, `jobs`, `job_crew`, `job_activity` with seed data.
+- Phase 2 COMPLETE:
+  - Read policies on all Phase 1 tables (employees, jobs, job_crew, job_activity)
+  - Jobs list reads from `jobs_list_view` via `/api/jobs` (newest first, mock fallback)
+  - Job Detail reads job, supervisor, crew, employees, activity via Supabase helpers (mock fallback)
+  - Create Site inserts via `POST /api/jobs` with auto-generated job numbers (SC-YYYY-NNN)
+  - Job Activity notes insert via `POST /api/jobs/[jobId]/activity` with UUID/legacy ID resolution
+- Phase 3-7 pending (Time Tracking, Safety/FLHA, Daily Reports, Storage, Auth). See SQL-PHASES.md for details.

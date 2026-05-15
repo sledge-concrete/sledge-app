@@ -104,7 +104,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
             className="pl-9"
           />
         </div>
-        <Badge variant="secondary" className="font-medium rounded-lg">
+        <Badge variant="secondary" className="font-medium text-base rounded-md px-4 py-2">
           {visibleJobs.length} {visibleJobs.length === 1 ? "job" : "jobs"}
         </Badge>
       </div>
@@ -116,7 +116,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
       </div>
 
       <div>
-        <div className="text-sm uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
+        <div className="text-base uppercase tracking-[0.08em] font-semibold text-muted-foreground mb-2">
           Filter by status
         </div>
         <div className="flex flex-wrap gap-2">

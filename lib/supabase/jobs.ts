@@ -30,6 +30,34 @@ export async function insertJob(payload: JobInsertPayload): Promise<JobRow | nul
   return data as JobRow;
 }
 
+export async function insertJobActivity(
+  jobId: string,
+  detail: string,
+  actorEmployeeId?: string,
+): Promise<JobActivityRow | null> {
+  const supabase = createServerSupabaseClient();
+  if (!supabase) return null;
+
+  const { data, error } = await supabase
+    .from("job_activity")
+    .insert({
+      job_id: jobId,
+      activity_type: "note",
+      actor_employee_id: actorEmployeeId || null,
+      occurred_at: new Date().toISOString(),
+      detail,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Supabase job activity insert failed.", error);
+    return null;
+  }
+
+  return data as JobActivityRow;
+}
+
 export async function getJobDetailByUUID(jobId: string): Promise<SupabaseJobDetail | null> {
   const supabase = createServerSupabaseClient();
   if (!supabase) return null;

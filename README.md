@@ -71,15 +71,25 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 - Verified `/dashboard/jobs/job-riverfront` returns `200 OK`.
 - Verified `npx next build` passes after the Supabase read wiring and map fix.
 
+### Phase 2.3 Job Activity Insert Path (2026-05-15)
+
+- Created `supabase/migrations/20260515210000_phase_2_3_job_activity_insert_policy.sql` — INSERT RLS policy for anon/authenticated.
+- Fixed missing GRANT in `20260515211000_fix_job_activity_insert_grant.sql`.
+- Added `insertJobActivity()` helper in `lib/supabase/jobs.ts`.
+- Built `POST /api/jobs/[jobId]/activity` route with UUID/legacy ID resolution.
+- Updated `ActivitySection` component: POST with loading states, error/success toasts.
+- Updated job detail page to pass `jobId` to `ActivitySection`.
+- Verified: Activities insert, persist to Supabase, display on page refresh.
+
+**Phase 2 Complete** — jobs list, detail, create site, and activity notes all read/write from Supabase.
+
 Current Supabase next steps:
 
-- Create Site insert path.
-- Job activity insert path.
-- Later: documents/photos in Supabase Storage.
-- Later: Time Tracking tables and persistence.
-- Later: Safety/FLHA normalized tables and persistence.
-- Later: Daily Reports signed database snapshots.
-- Last: Supabase Auth and stricter role-based RLS.
+- Phase 3: Time Tracking tables and persistence.
+- Phase 4: Safety/FLHA normalized tables and persistence.
+- Phase 5: Daily Reports signed database snapshots.
+- Phase 6: Documents/photos in Supabase Storage.
+- Phase 7: Supabase Auth and stricter role-based RLS.
 
 ### Daily Reports Tablet Modal Fixes
 

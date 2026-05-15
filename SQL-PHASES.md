@@ -320,8 +320,27 @@ Resolved recommendations for Phase 1:
 - Updated job detail page routing to try UUID lookup first, then legacy ID — resolves 404 errors on new sites.
 - Phase 2.2 verified: new sites created through dialog appear in jobs list, read from Supabase.
 
+### 2026-05-15 - Phase 2.3 Job Activity Insert Path Complete
+
+- Added migration `supabase/migrations/20260515210000_phase_2_3_job_activity_insert_policy.sql` with INSERT RLS policy for anon/authenticated roles.
+- Fixed missing GRANT in follow-up migration `20260515211000_fix_job_activity_insert_grant.sql` (`grant insert on public.job_activity to anon, authenticated;`).
+- Implemented `insertJobActivity()` Supabase helper in `lib/supabase/jobs.ts` to insert note-type activities with occurred_at and detail.
+- Built `POST /api/jobs/[jobId]/activity` route with UUID/legacy ID resolution — accepts either format, resolves to UUID before insert.
+- Updated `ActivitySection` component to POST to the activity route with loading states, error/success toasts, and refetch on insert.
+- Updated job detail page to pass `jobId` parameter to `ActivitySection`.
+- Verified end-to-end: activity notes POST successfully, persist to Supabase, and are retrieved on page load.
+- Phase 2.3 verified: new activities created via dialog appear in activity feed, read from Supabase on next detail page load.
+
+## Phase 2 Complete
+
+- Jobs list reads from Supabase (sorted newest first).
+- Job detail reads from Supabase (job, crew, supervisor, employees, activity).
+- Create Site persists to Supabase.
+- Job activity notes persist to Supabase.
+- Phase 2 read/write flow is fully Supabase-backed.
+
 ## Next Database Tasks
 
 1. Add a cleanup/testing query for seed data by `seed_batch` before production planning.
-2. Job activity insert path.
-3. Decide whether activity notes are enough or if documents/photos Storage work should happen first.
+2. Phase 3: Time Tracking tables and persistence.
+3. Phase 4: Safety/FLHA normalized tables.

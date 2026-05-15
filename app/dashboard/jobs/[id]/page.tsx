@@ -82,25 +82,25 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <div className="bg-[#2a2a2a] w-full flex justify-center py-4">
-          <TabsList className="flex gap-8 bg-transparent border-0">
-          <TabsTrigger value="overview" className="text-base rounded-lg bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2 data-[state=active]:px-5">
+        <div className="bg-[#2a2a2a] w-full py-4">
+          <TabsList className="w-full flex justify-between bg-transparent border-0">
+          <TabsTrigger value="overview" className="text-lg rounded-lg bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2 data-[state=active]:px-5">
             <Grid3x3 className="h-5 w-5" />
             Overview
           </TabsTrigger>
-          <TabsTrigger value="hours" className="text-base rounded-lg bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
+          <TabsTrigger value="hours" className="text-lg rounded-lg bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
             <Clock className="h-5 w-5" />
             Hours
           </TabsTrigger>
-          <TabsTrigger value="documents" className="text-base rounded-lg bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
+          <TabsTrigger value="documents" className="text-lg rounded-lg bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
             <FileText className="h-5 w-5" />
             Documents
           </TabsTrigger>
-          <TabsTrigger value="photos" className="text-base rounded-lg bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
+          <TabsTrigger value="photos" className="text-lg rounded-lg bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
             <Image className="h-5 w-5" />
             Photos
           </TabsTrigger>
-          <TabsTrigger value="activity" className="text-base rounded-lg bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
+          <TabsTrigger value="activity" className="text-lg rounded-lg bg-transparent text-gray-400 data-[state=active]:!bg-[#c0392b] data-[state=active]:text-white data-[state=active]:scale-110 hover:!bg-[#c0392b] hover:text-white active:scale-95 transition-all duration-200 inline-flex items-center gap-2 px-4 py-2">
             <TrendingUp className="h-5 w-5" />
             Activity
           </TabsTrigger>
@@ -133,7 +133,7 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
             </Card>
             <Card className="h-fit">
               <CardContent className="pt-0 px-6 pb-6">
-                <ActivitySection activities={jobActivity} />
+                <ActivitySection activities={jobActivity} jobId={id} />
               </CardContent>
             </Card>
           </div>
