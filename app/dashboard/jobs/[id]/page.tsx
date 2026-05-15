@@ -42,7 +42,7 @@ export default async function JobProfilePage(props: PageProps<"/dashboard/jobs/[
     <div>
       <Link
         href="/dashboard/jobs"
-        className={cn(buttonVariants({ variant: "ghost", size: "md" }), "mb-3 -ml-2 inline-flex")}
+        className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "mb-3 -ml-2 inline-flex")}
       >
         <ArrowLeft className="mr-1 h-4 w-4" /> All Jobs
       </Link>

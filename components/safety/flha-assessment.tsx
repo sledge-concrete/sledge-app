@@ -22,25 +22,25 @@ export function FlhaAssessmentForm({
   onCancel,
 }: {
   workers: Employee[];
-  defaults: Pick<FormState, "work_location" | "sr_number" | "work_crew" | "supervisor_name" | "supervisor_phone">;
+  defaults: Partial<FormState>;
   onSubmit: (values: FormState) => void;
   onCancel: () => void;
 }) {
   const today = getTodayDate();
   const [values, setValues] = useState<FormState>({
-    work_location: defaults.work_location ?? "",
-    sr_number: defaults.sr_number ?? "",
-    work_crew: typeof defaults.work_crew === "string" ? [] : defaults.work_crew || [],
-    supervisor_name: defaults.supervisor_name ?? "",
-    supervisor_phone: defaults.supervisor_phone ?? "",
-    filled_by: defaults.filled_by ?? workers[0]?.name ?? "",
-    job_description: defaults.job_description ?? "",
-    session_date: today,
-    hazards: defaults.hazards ?? [],
-    controls: defaults.controls ?? [],
-    other_hazards: defaults.other_hazards ?? ["", "", ""],
-    other_controls: defaults.other_controls ?? "",
-    comments: defaults.comments ?? "",
+    work_location: defaults?.work_location ?? "",
+    sr_number: defaults?.sr_number ?? "",
+    work_crew: typeof defaults?.work_crew === "string" ? [] : defaults?.work_crew || [],
+    supervisor_name: defaults?.supervisor_name ?? "",
+    supervisor_phone: defaults?.supervisor_phone ?? "",
+    filled_by: defaults?.filled_by ?? workers[0]?.name ?? "",
+    job_description: defaults?.job_description ?? "",
+    session_date: defaults?.session_date ?? today,
+    hazards: defaults?.hazards ?? [],
+    controls: defaults?.controls ?? [],
+    other_hazards: defaults?.other_hazards ?? ["", "", ""],
+    other_controls: defaults?.other_controls ?? "",
+    comments: defaults?.comments ?? "",
   });
   const [submitted, setSubmitted] = useState(false);
 
