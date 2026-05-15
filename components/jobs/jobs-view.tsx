@@ -128,7 +128,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
               type="button"
               onClick={() => toggleFilter(s)}
               className={cn(
-                "inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
+                "inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors",
                 on
                   ? "border-foreground/15 bg-foreground/5 text-foreground"
                   : "border-slate-300 bg-transparent text-muted-foreground opacity-60 hover:opacity-100",
@@ -155,25 +155,25 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
           <Table>
             <TableHeader className="bg-[#1a1a1a] [&_tr]:border-b-0">
               <TableRow className="hover:bg-[#1a1a1a]">
-                <TableHead className="w-[28%] h-11 px-6 text-sm font-semibold uppercase tracking-[0.08em] text-white/80">
+                <TableHead className="w-[28%] h-12 px-6 text-base font-semibold uppercase tracking-[0.08em] text-white/80">
                   Job
                 </TableHead>
-                <TableHead className="hidden h-11 text-sm font-semibold uppercase tracking-[0.08em] text-white/80 md:table-cell">
+                <TableHead className="hidden h-12 text-base font-semibold uppercase tracking-[0.08em] text-white/80 md:table-cell">
                   Number
                 </TableHead>
-                <TableHead className="h-11 text-center text-sm font-semibold uppercase tracking-[0.08em] text-white/80">
+                <TableHead className="h-12 text-center text-base font-semibold uppercase tracking-[0.08em] text-white/80">
                   Status
                 </TableHead>
-                <TableHead className="hidden h-11 text-center text-sm font-semibold uppercase tracking-[0.08em] text-white/80 sm:table-cell">
+                <TableHead className="hidden h-12 text-center text-base font-semibold uppercase tracking-[0.08em] text-white/80 sm:table-cell">
                   Crew
                 </TableHead>
-                <TableHead className="hidden h-11 text-sm font-semibold uppercase tracking-[0.08em] text-white/80 lg:table-cell">
+                <TableHead className="hidden h-12 text-base font-semibold uppercase tracking-[0.08em] text-white/80 lg:table-cell">
                   Client
                 </TableHead>
-                <TableHead className="hidden h-11 text-sm font-semibold uppercase tracking-[0.08em] text-white/80 md:table-cell">
+                <TableHead className="hidden h-12 text-base font-semibold uppercase tracking-[0.08em] text-white/80 md:table-cell">
                   Address
                 </TableHead>
-                <TableHead className="h-11 px-6 text-center text-sm font-semibold uppercase tracking-[0.08em] text-white/80">
+                <TableHead className="h-12 px-6 text-center text-base font-semibold uppercase tracking-[0.08em] text-white/80">
                   Files
                 </TableHead>
               </TableRow>
