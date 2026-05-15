@@ -37,6 +37,55 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Progress Log
 
+### Project Operating Structure
+
+- Work is being handled in small phases, with direct implementation only after the requirement is clear.
+- Keep UI fixes separate from database migration work unless the UI change is required to verify the data flow.
+- Keep database planning and progress in `SQL-PHASES.md`.
+- Keep future-agent operating rules in `AGENTS.md`; `CLAUDE.md` points there too.
+- Supabase is being introduced remote-first. The user chose to skip Docker/local Supabase for now.
+- The agent drafts migrations, seed files, app wiring, and documentation. The user can run Supabase CLI pushes and SQL Editor verification manually.
+- Do not add service-role keys to `.env.local`. Current app wiring only needs the Supabase project URL and anon/publishable key.
+
+### Supabase Migration, Phase 0 Through Phase 2
+
+- Added Supabase project scaffolding under `supabase/`.
+- Added `SQL-PHASES.md` as the database progress tracker and source of truth for schema phases.
+- Created Phase 1 core database migration for employees, jobs, job crew, and job activity.
+- Added tagged seed data in `supabase/seed.sql` using `is_seed_data` and `seed_batch` for future cleanup before production.
+- Chose UUID database primary keys with `legacy_mock_id` mapping so existing mock-routed screens can be migrated gradually.
+- Chose normalized rows for future reporting-heavy modules.
+- Chose Supabase Storage as the long-term direction for signatures and uploaded media, with SQL metadata later.
+- Auth is deferred until the final Supabase phase.
+- Pushed and verified Phase 1 in the remote Supabase project.
+- Ran seed SQL manually in Supabase SQL Editor and verified counts:
+  - `employees`: 5
+  - `jobs`: 16
+  - `job_crew`: 28
+  - `job_activity`: 9
+- Created Phase 2 read-policy migration for the current jobs flow.
+- Configured app-side Supabase reads with mock fallbacks so the app remains usable if Supabase env vars are missing or a read fails.
+- Wired `/api/jobs` to `jobs_list_view`; verified the jobs list is Supabase-backed and sorted by job number.
+- Wired Job Detail reads to Supabase for job, supervisor, crew, employees, and activity.
+- Fixed the Job Detail map wrapper to load Leaflet client-only, resolving the `window is not defined` render/build blocker.
+- Verified `/dashboard/jobs/job-riverfront` returns `200 OK`.
+- Verified `npx next build` passes after the Supabase read wiring and map fix.
+
+Current Supabase next steps:
+
+- Create Site insert path.
+- Job activity insert path.
+- Later: documents/photos in Supabase Storage.
+- Later: Time Tracking tables and persistence.
+- Later: Safety/FLHA normalized tables and persistence.
+- Later: Daily Reports signed database snapshots.
+- Last: Supabase Auth and stricter role-based RLS.
+
+### Daily Reports Tablet Modal Fixes
+
+- Replaced the native supervisor dropdown in the Generate Daily Report modal with the app `Select` component so tablet-sized views do not show the browser-native dropdown in the wrong place.
+- Adjusted the Generate Daily Report modal footer spacing so Cancel and Sign & Save Report are not tight against the bottom edge.
+
 ### Daily Reports Aggregate Flow
 
 - Reworked the Daily Reports landing page around one signed daily report per date instead of bulky per-job report cards.

@@ -10,6 +10,10 @@ export type JobsApiItem = {
   worker_count: number;
   lat: number;
   lng: number;
+  service_type?: string;
+  notes?: string;
+  supervisorId?: string;
+  crew?: string[];
 };
 
 export const STATUS_COLOR: Record<JobStatus, string> = {
