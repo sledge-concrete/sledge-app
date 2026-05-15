@@ -128,7 +128,7 @@ export function JobsView({ initialJobs }: { initialJobs: JobsApiItem[] }) {
               type="button"
               onClick={() => toggleFilter(s)}
               className={cn(
-                "inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors",
+                "inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
                 on
                   ? "border-foreground/15 bg-foreground/5 text-foreground"
                   : "border-slate-300 bg-transparent text-muted-foreground opacity-60 hover:opacity-100",
