@@ -103,6 +103,7 @@ export function SignatureCanvas({ onSignatureChange, isLocked }: SignatureCanvas
       />
       {!isLocked && (
         <button
+          type="button"
           onClick={clearSignature}
           className="rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-100"
         >
