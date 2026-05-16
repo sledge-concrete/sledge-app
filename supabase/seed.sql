@@ -448,7 +448,7 @@ insert into public.active_shifts (
 select
   e.id,
   j.id,
-  (CURRENT_DATE || ' 07:15:00')::timestamptz,
+  (CURRENT_DATE + TIME '07:15:00')::timestamptz,
   true,
   'phase_3_time_tracking_seed_2026_05_15'
 from public.employees e
@@ -488,15 +488,15 @@ select
 from (
   values
     -- Mike: Riverfront today, clock source, pending
-    ((CURRENT_DATE || ' 07:00:00')::timestamptz, (CURRENT_DATE || ' 15:30:00')::timestamptz, 30, 'Foundation prep and rebar staging.', 'clock', 'pending', (CURRENT_DATE || ' 16:30:00')::timestamptz, null, null, 'u-mike', 'job-riverfront'),
+    ((CURRENT_DATE + TIME '07:00:00')::timestamptz, (CURRENT_DATE + TIME '15:30:00')::timestamptz, 30, 'Foundation prep and rebar staging.', 'clock', 'pending', (CURRENT_DATE + TIME '16:30:00')::timestamptz, null, null, 'u-mike', 'job-riverfront'),
     -- Tanya: Eastside today, manual source, pending
-    ((CURRENT_DATE || ' 06:45:00')::timestamptz, (CURRENT_DATE || ' 14:45:00')::timestamptz, 30, 'Warehouse slab finishing.', 'manual', 'pending', (CURRENT_DATE || ' 16:30:00')::timestamptz, null, null, 'u-tanya', 'job-eastside'),
+    ((CURRENT_DATE + TIME '06:45:00')::timestamptz, (CURRENT_DATE + TIME '14:45:00')::timestamptz, 30, 'Warehouse slab finishing.', 'manual', 'pending', (CURRENT_DATE + TIME '16:30:00')::timestamptz, null, null, 'u-tanya', 'job-eastside'),
     -- Mike: Riverfront yesterday AM, split source, approved
-    ((CURRENT_DATE - INTERVAL '1 day' || ' 07:00:00')::timestamptz, (CURRENT_DATE - INTERVAL '1 day' || ' 11:30:00')::timestamptz, 15, 'Morning pour setup.', 'split', 'approved', (CURRENT_DATE - INTERVAL '1 day' || ' 16:30:00')::timestamptz, (CURRENT_DATE - INTERVAL '1 day' || ' 17:05:00')::timestamptz, 'u-sarah', 'u-mike', 'job-riverfront'),
+    (((CURRENT_DATE - INTERVAL '1 day')::date + TIME '07:00:00')::timestamptz, ((CURRENT_DATE - INTERVAL '1 day')::date + TIME '11:30:00')::timestamptz, 15, 'Morning pour setup.', 'split', 'approved', ((CURRENT_DATE - INTERVAL '1 day')::date + TIME '16:30:00')::timestamptz, ((CURRENT_DATE - INTERVAL '1 day')::date + TIME '17:05:00')::timestamptz, 'u-sarah', 'u-mike', 'job-riverfront'),
     -- Mike: Maple yesterday PM, split source, approved
-    ((CURRENT_DATE - INTERVAL '1 day' || ' 12:15:00')::timestamptz, (CURRENT_DATE - INTERVAL '1 day' || ' 16:45:00')::timestamptz, 0, 'Driveway forms and cleanup.', 'split', 'approved', (CURRENT_DATE - INTERVAL '1 day' || ' 16:30:00')::timestamptz, (CURRENT_DATE - INTERVAL '1 day' || ' 17:05:00')::timestamptz, 'u-sarah', 'u-mike', 'job-maple'),
+    (((CURRENT_DATE - INTERVAL '1 day')::date + TIME '12:15:00')::timestamptz, ((CURRENT_DATE - INTERVAL '1 day')::date + TIME '16:45:00')::timestamptz, 0, 'Driveway forms and cleanup.', 'split', 'approved', ((CURRENT_DATE - INTERVAL '1 day')::date + TIME '16:30:00')::timestamptz, ((CURRENT_DATE - INTERVAL '1 day')::date + TIME '17:05:00')::timestamptz, 'u-sarah', 'u-mike', 'job-maple'),
     -- Jake: Carstairs 2 days ago, manual source, declined
-    ((CURRENT_DATE - INTERVAL '2 days' || ' 07:30:00')::timestamptz, (CURRENT_DATE - INTERVAL '2 days' || ' 15:00:00')::timestamptz, 30, 'Base prep.', 'manual', 'declined', (CURRENT_DATE - INTERVAL '2 days' || ' 16:30:00')::timestamptz, (CURRENT_DATE - INTERVAL '2 days' || ' 17:05:00')::timestamptz, 'u-ben', 'u-jake', 'job-carstairs-driveway')
+    (((CURRENT_DATE - INTERVAL '2 days')::date + TIME '07:30:00')::timestamptz, ((CURRENT_DATE - INTERVAL '2 days')::date + TIME '15:00:00')::timestamptz, 30, 'Base prep.', 'manual', 'declined', ((CURRENT_DATE - INTERVAL '2 days')::date + TIME '16:30:00')::timestamptz, ((CURRENT_DATE - INTERVAL '2 days')::date + TIME '17:05:00')::timestamptz, 'u-ben', 'u-jake', 'job-carstairs-driveway')
 ) as entry(clock_in_at, clock_out_at, break_minutes, notes, source, status, submitted_at, reviewed_at, reviewed_by_legacy, employee_legacy_id, job_legacy_id)
 join public.employees e on e.legacy_mock_id = entry.employee_legacy_id
 join public.jobs j on j.legacy_mock_id = entry.job_legacy_id
@@ -522,12 +522,25 @@ select
   'Site supervisor present at all times',
   'Weather was clear. All hazards identified and controls in place.',
   'Ben Sledge',
-  (CURRENT_DATE - INTERVAL '1 day' || ' 16:30:00')::timestamptz,
+  ((CURRENT_DATE - INTERVAL '1 day')::date + TIME '16:30:00')::timestamptz,
   true,
   'phase_4_safety_seed_2026_05_15'
 from public.jobs j
 where j.legacy_mock_id = 'job-riverfront'
-on conflict (job_id, session_date) do nothing;
+on conflict (job_id, session_date) do update set
+  filled_by = excluded.filled_by,
+  work_location = excluded.work_location,
+  sr_number = excluded.sr_number,
+  job_description = excluded.job_description,
+  supervisor_name = excluded.supervisor_name,
+  supervisor_phone = excluded.supervisor_phone,
+  other_hazards = excluded.other_hazards,
+  other_controls = excluded.other_controls,
+  comments = excluded.comments,
+  reviewed_by = excluded.reviewed_by,
+  reviewed_at = excluded.reviewed_at,
+  is_seed_data = excluded.is_seed_data,
+  seed_batch = excluded.seed_batch;
 
 insert into public.flha_session_hazards (session_id, hazard_type)
 select
@@ -579,7 +592,7 @@ select
   e.id,
   e.name,
   'data:image/svg+xml;utf8,<svg xmlns=''http://www.w3.org/2000/svg'' width=''420'' height=''120'' viewBox=''0 0 420 120''><path d=''M18 72 C55 20,94 104,132 54 S206 35,242 68 S318 87,390 38'' fill=''none'' stroke=''%231a1a1a'' stroke-width=''5'' stroke-linecap=''round''/><text x=''22'' y=''105'' font-size=''20'' fill=''%2352525b''>' || e.name || '</text></svg>',
-  (CURRENT_DATE - INTERVAL '1 day' || ' 15:30:00')::timestamptz
+  ((CURRENT_DATE - INTERVAL '1 day')::date + TIME '15:30:00')::timestamptz
 from public.flha_sessions s
 join public.employees e on e.legacy_mock_id IN ('u-mike', 'u-jake')
 where s.is_seed_data = true and s.seed_batch = 'phase_4_safety_seed_2026_05_15'

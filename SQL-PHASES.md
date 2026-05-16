@@ -128,9 +128,9 @@ Tables created:
 
 Goal: store signed daily reports as database snapshots generated from time, safety, jobs, weather, and signatures.
 
-Status: In progress
+Status: Complete
 
-Tables drafted:
+Tables:
 
 - `daily_reports`
 - `daily_report_sites`
@@ -468,11 +468,8 @@ Post-Phase 4 cleanup — resolving TypeScript build errors so production deploy 
 
 ## Next Database Tasks
 
-1. User: run Phase 5 seed SQL in Supabase SQL Editor if seed data is needed.
-2. Test Phase 5 schema shape with SQL queries before app wiring.
-3. Phase 5 app wiring for Daily Reports API/helper/hook.
-4. Phase 6: Documents/photos/signatures in Supabase Storage.
-5. Phase 7: Supabase Auth and stricter role-based RLS.
+1. Phase 6: Documents/photos/signatures in Supabase Storage.
+2. Phase 7: Supabase Auth and stricter role-based RLS.
 
 ### 2026-05-16 - Phase 5 Daily Reports Schema Drafted
 
@@ -500,7 +497,15 @@ Post-Phase 4 cleanup — resolving TypeScript build errors so production deploy 
 - Verified `npx supabase migration list` shows `20260516140000` in both Local and Remote history.
 - Project owner ran the Phase 5 seed block successfully in Supabase SQL Editor after the signature timestamp fix.
 - Verified Phase 5 row counts in Supabase SQL Editor: reports/sites/employee-hours/weather/signatures = 1/2/2/6/1.
-- App wiring remains pending; current Daily Reports UI still uses local aggregate report persistence.
+- Follow-up seed validation showed Phase 3 rows present but Phase 4 FLHA seed rows missing; updated `supabase/seed.sql` so Phase 4 FLHA parent seed updates on `(job_id, session_date)` conflicts instead of doing nothing.
+- Replaced remaining Phase 3/4 date-time concatenation expressions in `supabase/seed.sql` with date + `TIME` arithmetic so manual SQL Editor reruns are safe.
+- Project owner reran the Phase 4 seed block and verified FLHA row counts in Supabase SQL Editor: sessions/hazards/controls/crew/signatures = 1/4/4/3/2.
+- Added `lib/supabase/daily-reports.ts` to map normalized Supabase rows into existing aggregate Daily Reports UI types and save signed snapshots back to Supabase.
+- Added `/api/daily-reports` GET/POST route for reading and upserting aggregate daily reports.
+- Updated `useDailyAggregateReports` to fetch/save through the API with localStorage fallback if Supabase is unavailable.
+- Updated Daily Reports save flow to await the persisted report before expanding the saved row.
+- Verified `npm run build` passes after Phase 5 app wiring.
+- Phase 5 Daily Reports app wiring is complete; next SQL focus is Phase 6 Storage.
 
 ---
 

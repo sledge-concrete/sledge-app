@@ -10,7 +10,19 @@ export function useDailyAggregateReports() {
   const [reports, setReports] = useState<DailyAggregateReport[]>(() => aggregateDailyReports);
 
   useEffect(() => {
-    const timeout = window.setTimeout(() => {
+    const loadReports = async () => {
+      try {
+        const response = await fetch("/api/daily-reports");
+        if (response.ok) {
+          const data = (await response.json()) as { reports?: DailyAggregateReport[] };
+          setReports(data.reports ?? []);
+          loadedStoredReports.current = true;
+          return;
+        }
+      } catch (err) {
+        console.error("Failed to fetch daily reports from Supabase, using local fallback:", err);
+      }
+
       const stored = window.localStorage.getItem(STORAGE_KEY);
       loadedStoredReports.current = true;
       if (!stored) return;
@@ -20,8 +32,9 @@ export function useDailyAggregateReports() {
       } catch {
         window.localStorage.removeItem(STORAGE_KEY);
       }
-    }, 0);
-    return () => window.clearTimeout(timeout);
+    };
+
+    void loadReports();
   }, []);
 
   useEffect(() => {
@@ -32,11 +45,35 @@ export function useDailyAggregateReports() {
   return useMemo(
     () => ({
       reports,
-      upsertReport(report: DailyAggregateReport) {
+      async upsertReport(report: DailyAggregateReport) {
         setReports((current) => {
           const withoutDate = current.filter((item) => item.date !== report.date);
           return [report, ...withoutDate].sort((a, b) => b.date.localeCompare(a.date));
         });
+
+        try {
+          const response = await fetch("/api/daily-reports", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(report),
+          });
+
+          if (response.ok) {
+            const data = (await response.json()) as { report?: DailyAggregateReport };
+            if (data.report) {
+              const savedReport = data.report;
+              setReports((current) => {
+                const withoutDate = current.filter((item) => item.date !== savedReport.date);
+                return [savedReport, ...withoutDate].sort((a, b) => b.date.localeCompare(a.date));
+              });
+              return savedReport;
+            }
+          }
+        } catch (err) {
+          console.error("Save daily report to Supabase failed, keeping local report:", err);
+        }
+
+        return report;
       },
     }),
     [reports],

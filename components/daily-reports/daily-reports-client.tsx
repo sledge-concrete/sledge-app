@@ -114,7 +114,7 @@ export function DailyReportsClient() {
     );
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (workedSites.length === 0) {
       window.alert("No worked sites were found for this date.");
@@ -138,12 +138,12 @@ export function DailyReportsClient() {
       },
     });
 
-    upsertReport(report);
+    const savedReport = await upsertReport(report);
     setOpen(false);
     setOverallProgressSummary("");
     setSiteProgress({});
     setSignatureData("");
-    setExpandedReportId(report.id);
+    setExpandedReportId(savedReport.id);
   }
 
   return (
