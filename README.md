@@ -83,6 +83,63 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 **Phase 2 Complete** — jobs list, detail, create site, and activity notes all read/write from Supabase.
 
+### Phase 3 Time Tracking (2026-05-15)
+
+**Schema & Migration:**
+- Analyzed existing time tracking workflow: active shifts (one per employee), time entries (one per shift, multiple per day for split shifts), time-off requests (moved to Scheduling phase).
+- Created migration `20260515220000_phase_3_time_tracking.sql`:
+  - Tables: `active_shifts` (temporary, converted to entries on clock out), `time_entries` (normalized per shift with source + status)
+  - Indexes on employee_id, job_id, status, clock_in_at, employee+date combo
+  - RLS policies: read all, insert own, update status
+  - Added `update_timestamp()` trigger function for updated_at tracking
+  - Timestamps stored as single clock_in_at + clock_out_at (app converts to date/time strings)
+
+**Seeding & Testing:**
+- Created seed data: 1 active shift (Jake/Carstairs today), 5 time entries (Mike/Tanya/Jake with various sources + statuses)
+- All tagged with `is_seed_data=true`, `seed_batch=phase_3_time_tracking_seed_2026_05_15`
+- Verified in SQL Editor: counts correct, sources/statuses/dates match design
+
+**Supabase Helpers:**
+- Created `lib/supabase/time.ts` with functions: `clockIn()`, `clockOut()`, `addManualEntry()`, `getActiveShifts()`, `getTimeEntries()`, `reviewTimeEntry()`
+- Row converters: `rowToTimeEntry()`, `rowToActiveShift()` (convert DB timestamps to app format)
+
+**API Endpoints & App Wiring:**
+- Created endpoints: `POST /api/time/clock-in`, `POST /api/time/clock-out`, `GET/POST /api/time/entries`, `GET /api/time` (initial load)
+- Updated `useTimeTracking` hook: fetch from `/api/time` on mount, clock in/out/add entry POST to APIs with async/await
+- Kept localStorage fallback for resilience; all actions update local state + persist to Supabase
+- All methods now async with try/catch, graceful fallback to mock if Supabase unavailable
+
+**Phase 3 Complete** — time tracking fully Supabase-backed with API layer and hook wiring.
+
+### Phase 4 Safety/FLHA (2026-05-15)
+
+**Schema & Migration:**
+- Analyzed FLHA workflow: sessions (one per job/date), hazards/controls (arrays), crew (names), signatures (one per worker).
+- Normalized design: separate tables for hazards, controls, crew (not JSON arrays) for reporting/querying.
+- Created migration `20260515230000_phase_4_safety_flha.sql`:
+  - Tables: `flha_sessions`, `flha_session_hazards`, `flha_session_controls`, `flha_session_crew`, `flha_signatures`
+  - Indexes on job_id, session_date, hazard_type, control_type, employee_id for fast queries
+  - RLS policies: read all, insert/update/delete
+  - Updated_at triggers for sessions + signatures
+
+**Supabase Helpers:**
+- Created `lib/supabase/safety.ts` with functions: `createFlhaSession()`, `getJobSessions()`, `getTodaySession()`, `addSignatureToSession()`, `markSessionReviewed()`, `updateFlhaSession()`, `deleteFlhaSession()`
+- Batch operations for performance (insert session + hazards + controls + crew in parallel)
+- Pagination support (50-100 sessions per page for mobile)
+
+**API Endpoints & App Wiring:**
+- Created endpoints: GET/POST /api/safety/sessions, GET by-job/[jobId], PUT/DELETE /api/safety/sessions/[sessionId], POST signatures, POST review
+- Updated `useFlhaSessions` hook: fetch from API on mount, all operations async with localStorage fallback
+- Added cache headers (30s) for performance on mobile networks
+- Maintains same public API (components don't change)
+
+**Seeding & Performance:**
+- Seed data: 1 session (Riverfront yesterday) with 4 hazards, 4 controls, crew (Mike/Jake/Tanya), 2 signatures, reviewed by Ben
+- All tagged with `is_seed_data=true`, `seed_batch=phase_4_safety_seed_2026_05_15`
+- Normalized tables optimize for: frequency queries ("most common hazards?"), crew tracking ("who was on site?"), signature lookups
+
+**Phase 4 Complete** — safety FLHA fully Supabase-backed with normalized schema for reporting.
+
 Current Supabase next steps:
 
 - Phase 3: Time Tracking tables and persistence.

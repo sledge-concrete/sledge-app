@@ -106,13 +106,13 @@ Candidate database work:
 
 Goal: replace browser `localStorage` time tracking persistence with Supabase tables.
 
-Status: Pending
+Status: Complete
 
-Candidate tables:
+Tables created:
 
-- `active_shifts`
-- `time_entries`
-- `time_off_requests`
+- `active_shifts` — temporary shift tracking (one per employee, deleted on clock out)
+- `time_entries` — normalized per-shift entries (multiple per day allowed for split shifts)
+- (time_off_requests moved to Scheduling phase, not included in Phase 3)
 
 ### Phase 4 - Safety / FLHA
 
@@ -339,8 +339,100 @@ Resolved recommendations for Phase 1:
 - Job activity notes persist to Supabase.
 - Phase 2 read/write flow is fully Supabase-backed.
 
+### 2026-05-15 - Phase 3 Time Tracking Schema Complete
+
+- Reviewed existing time tracking workflow in `useTimeTracking` hook, `time-types.ts`, and mock data.
+- Analyzed data patterns:
+  - Active Shifts: one per employee, temporary (deleted on clock out)
+  - Time Entries: one per shift per day, multiple allowed (split shifts)
+  - Time Off Requests: moving to Scheduling phase
+- Key design decisions:
+  - Active shifts: simple tracking, lightweight, frequent deletes
+  - Time entries: normalized per shift (not per day), includes source (clock|manual|split), status (pending|approved|declined)
+  - Approval workflow: single reviewer (reviewed_by + reviewed_at in time_entry row, no separate table needed yet)
+  - Timestamps: store single clock_in_at + clock_out_at in DB, app converts to date/time strings on read
+- Created migration `20260515220000_phase_3_time_tracking.sql`:
+  - Tables: `active_shifts`, `time_entries`
+  - Indexes: employee_id, job_id, status, clock_in_at, employee+date combo
+  - RLS policies: read all entries, insert own, update status (review)
+  - Grants for anon/authenticated roles
+  - Fixed: added `update_timestamp()` trigger function for updated_at tracking
+- Created helper functions in `lib/supabase/time.ts`:
+  - `clockIn()`, `clockOut()`, `addManualEntry()`, `getActiveShifts()`, `getTimeEntries()`, `reviewTimeEntry()`
+  - Row converters: `rowToTimeEntry()`, `rowToActiveShift()`
+- Pushed migration to remote Supabase (2026-05-15).
+- Seeded test data:
+  - 1 active shift: Jake clocked in at Carstairs (today 07:15)
+  - 5 time entries: Mike (Riverfront clock/pending, Maple split/approved, Riverfront split/approved), Tanya (Eastside manual/pending), Jake (Carstairs manual/declined)
+  - All tagged with `is_seed_data=true`, `seed_batch=phase_3_time_tracking_seed_2026_05_15`
+- Data verified in SQL Editor: counts match, sources/statuses/dates correct.
+
+### 2026-05-15 - Phase 3 App Wiring Complete
+
+- Created API endpoints:
+  - `POST /api/time/clock-in` - clock in a worker, creates active_shift
+  - `POST /api/time/clock-out` - clock out, creates time_entry, deletes active_shift
+  - `GET /api/time/entries` - fetch all time entries
+  - `POST /api/time/entries` - add manual time entry
+  - `GET /api/time` - fetch active shifts and entries (for initial load)
+- Updated `useTimeTracking` hook:
+  - Fetch from `/api/time` on mount instead of localStorage
+  - Clock in/out/add entry now POST to APIs (async with fallback to local mock)
+  - Maintains localStorage sync for resilience
+  - All actions keep local state updates + Supabase persistence
+- Phase 3 ready to test end-to-end.
+
+## Phase 3 Complete
+
+- Active shifts tracked in Supabase (clock in creates shift, clock out creates entry + deletes shift).
+- Time entries normalized per shift (multiple per day for split shifts).
+- Clock in/out/add entry fully wired via API endpoints with Supabase persistence.
+- App hook (useTimeTracking) now async, calls APIs with localStorage fallback.
+- Seed data verified: 1 active shift, 5 time entries with correct sources/statuses.
+- Phase 3 read/write flow is fully Supabase-backed.
+
+### 2026-05-15 - Phase 4 Safety/FLHA Schema & App Wiring Complete
+
+- Analyzed FLHA workflow: sessions (one per job/date), hazards/controls (arrays), crew (names), signatures (one per worker)
+- Key design: normalized hazards/controls/crew tables for reporting queries + performance indexes
+- Created migration `20260515230000_phase_4_safety_flha.sql`:
+  - Tables: `flha_sessions`, `flha_session_hazards`, `flha_session_controls`, `flha_session_crew`, `flha_signatures`
+  - Indexes on job_id, session_date, reviewed_by, hazard_type, control_type, employee_id
+  - RLS policies: read all, insert/update/delete with anon/authenticated
+  - Updated_at triggers on sessions + signatures
+- Created helpers in `lib/supabase/safety.ts`:
+  - `createFlhaSession()` - batch insert session + hazards + controls + crew (parallel)
+  - `getJobSessions()` - paginated (50/100 per page for performance)
+  - `getTodaySession()` - quick lookup for current day
+  - `addSignatureToSession()` - replace per-worker signature
+  - `markSessionReviewed()` - supervisor approval
+  - `updateFlhaSession()` - edit existing (replace hazards/controls)
+  - `deleteFlhaSession()` - cascades to all related rows
+- Created API endpoints with caching headers:
+  - GET /api/safety/sessions (paginated, 30s cache)
+  - POST /api/safety/sessions (create session)
+  - GET /api/safety/sessions/by-job/[jobId] (per-job list + today lookup)
+  - PUT /api/safety/sessions/[sessionId] (update)
+  - DELETE /api/safety/sessions/[sessionId] (delete)
+  - POST /api/safety/sessions/[sessionId]/signatures (add signature)
+  - POST /api/safety/sessions/[sessionId]/review (mark reviewed)
+- Updated `useFlhaSessions` hook:
+  - Fetch from `/api/safety/sessions` on mount
+  - All operations (add, sign, review, delete) POST to APIs with localStorage fallback
+  - Maintains async/await pattern for fast response
+- Added seed data:
+  - 1 FLHA session (Riverfront yesterday)
+  - 4 hazards (Fall hazards, Working Alone, Mechanical, Unsafe tools)
+  - 4 controls (Hard hat, Fall protection, Additional Lighting, Stand by worker)
+  - Crew: Mike, Jake, Tanya
+  - 2 signatures (Mike, Jake both signed)
+  - Session reviewed by Ben Sledge
+  - All tagged: `is_seed_data=true`, `seed_batch=phase_4_safety_seed_2026_05_15`
+- Phase 4 ready to push + test end-to-end.
+
 ## Next Database Tasks
 
-1. Add a cleanup/testing query for seed data by `seed_batch` before production planning.
-2. Phase 3: Time Tracking tables and persistence.
-3. Phase 4: Safety/FLHA normalized tables.
+1. User: `npx supabase db push` (push Phase 4 migration)
+2. User: Run seed data in Supabase SQL Editor (if needed)
+3. Test Phase 4 end-to-end (create FLHA, add signatures, review in app)
+4. Phase 5: Daily Reports normalized snapshot tables.

@@ -436,3 +436,152 @@ on conflict (job_id, legacy_mock_id) where legacy_mock_id is not null do update 
   detail = excluded.detail,
   is_seed_data = excluded.is_seed_data,
   seed_batch = excluded.seed_batch;
+
+-- Phase 3: Time Tracking Seed Data
+insert into public.active_shifts (
+  employee_id,
+  job_id,
+  clock_in_at,
+  is_seed_data,
+  seed_batch
+)
+select
+  e.id,
+  j.id,
+  (CURRENT_DATE || ' 07:15:00')::timestamptz,
+  true,
+  'phase_3_time_tracking_seed_2026_05_15'
+from public.employees e
+join public.jobs j on true
+where e.legacy_mock_id = 'u-jake' and j.legacy_mock_id = 'job-carstairs-driveway'
+on conflict do nothing;
+
+insert into public.time_entries (
+  employee_id,
+  job_id,
+  clock_in_at,
+  clock_out_at,
+  break_minutes,
+  notes,
+  source,
+  status,
+  submitted_at,
+  reviewed_by,
+  reviewed_at,
+  is_seed_data,
+  seed_batch
+)
+select
+  e.id,
+  j.id,
+  entry.clock_in_at,
+  entry.clock_out_at,
+  entry.break_minutes,
+  entry.notes,
+  entry.source,
+  entry.status,
+  entry.submitted_at,
+  reviewer.id,
+  entry.reviewed_at,
+  true,
+  'phase_3_time_tracking_seed_2026_05_15'
+from (
+  values
+    -- Mike: Riverfront today, clock source, pending
+    ((CURRENT_DATE || ' 07:00:00')::timestamptz, (CURRENT_DATE || ' 15:30:00')::timestamptz, 30, 'Foundation prep and rebar staging.', 'clock', 'pending', (CURRENT_DATE || ' 16:30:00')::timestamptz, null, null, 'u-mike', 'job-riverfront'),
+    -- Tanya: Eastside today, manual source, pending
+    ((CURRENT_DATE || ' 06:45:00')::timestamptz, (CURRENT_DATE || ' 14:45:00')::timestamptz, 30, 'Warehouse slab finishing.', 'manual', 'pending', (CURRENT_DATE || ' 16:30:00')::timestamptz, null, null, 'u-tanya', 'job-eastside'),
+    -- Mike: Riverfront yesterday AM, split source, approved
+    ((CURRENT_DATE - INTERVAL '1 day' || ' 07:00:00')::timestamptz, (CURRENT_DATE - INTERVAL '1 day' || ' 11:30:00')::timestamptz, 15, 'Morning pour setup.', 'split', 'approved', (CURRENT_DATE - INTERVAL '1 day' || ' 16:30:00')::timestamptz, (CURRENT_DATE - INTERVAL '1 day' || ' 17:05:00')::timestamptz, 'u-sarah', 'u-mike', 'job-riverfront'),
+    -- Mike: Maple yesterday PM, split source, approved
+    ((CURRENT_DATE - INTERVAL '1 day' || ' 12:15:00')::timestamptz, (CURRENT_DATE - INTERVAL '1 day' || ' 16:45:00')::timestamptz, 0, 'Driveway forms and cleanup.', 'split', 'approved', (CURRENT_DATE - INTERVAL '1 day' || ' 16:30:00')::timestamptz, (CURRENT_DATE - INTERVAL '1 day' || ' 17:05:00')::timestamptz, 'u-sarah', 'u-mike', 'job-maple'),
+    -- Jake: Carstairs 2 days ago, manual source, declined
+    ((CURRENT_DATE - INTERVAL '2 days' || ' 07:30:00')::timestamptz, (CURRENT_DATE - INTERVAL '2 days' || ' 15:00:00')::timestamptz, 30, 'Base prep.', 'manual', 'declined', (CURRENT_DATE - INTERVAL '2 days' || ' 16:30:00')::timestamptz, (CURRENT_DATE - INTERVAL '2 days' || ' 17:05:00')::timestamptz, 'u-ben', 'u-jake', 'job-carstairs-driveway')
+) as entry(clock_in_at, clock_out_at, break_minutes, notes, source, status, submitted_at, reviewed_at, reviewed_by_legacy, employee_legacy_id, job_legacy_id)
+join public.employees e on e.legacy_mock_id = entry.employee_legacy_id
+join public.jobs j on j.legacy_mock_id = entry.job_legacy_id
+left join public.employees reviewer on reviewer.legacy_mock_id = entry.reviewed_by_legacy
+on conflict do nothing;
+
+-- Phase 4: Safety/FLHA Seed Data
+insert into public.flha_sessions (
+  job_id, session_date, filled_by, work_location, sr_number, job_description,
+  supervisor_name, supervisor_phone, other_hazards, other_controls, comments,
+  reviewed_by, reviewed_at, is_seed_data, seed_batch
+)
+select
+  j.id,
+  (CURRENT_DATE - INTERVAL '1 day')::date,
+  'Sarah Holm',
+  'Riverfront Commercial Build - Foundation Area',
+  'SC-2026-014',
+  'Foundation excavation and rebar placement',
+  'Sarah Holm',
+  '403-555-0184',
+  ARRAY['Uneven ground surface', 'Heavy equipment on site', '']::text[],
+  'Site supervisor present at all times',
+  'Weather was clear. All hazards identified and controls in place.',
+  'Ben Sledge',
+  (CURRENT_DATE - INTERVAL '1 day' || ' 16:30:00')::timestamptz,
+  true,
+  'phase_4_safety_seed_2026_05_15'
+from public.jobs j
+where j.legacy_mock_id = 'job-riverfront'
+on conflict (job_id, session_date) do nothing;
+
+insert into public.flha_session_hazards (session_id, hazard_type)
+select
+  s.id,
+  hazard_type
+from public.flha_sessions s
+cross join (
+  values
+    ('Fall hazards'),
+    ('Working Alone'),
+    ('Mechanical'),
+    ('Unsafe tools/equipment')
+) as hazards(hazard_type)
+where s.legacy_mock_id IS NULL and s.is_seed_data = true and s.seed_batch = 'phase_4_safety_seed_2026_05_15'
+  and s.session_date = (CURRENT_DATE - INTERVAL '1 day')::date
+on conflict do nothing;
+
+insert into public.flha_session_controls (session_id, control_type)
+select
+  s.id,
+  control_type
+from public.flha_sessions s
+cross join (
+  values
+    ('Hard hat'),
+    ('Fall protection'),
+    ('Additional Lighting'),
+    ('Stand by worker')
+) as controls(control_type)
+where s.is_seed_data = true and s.seed_batch = 'phase_4_safety_seed_2026_05_15'
+  and s.session_date = (CURRENT_DATE - INTERVAL '1 day')::date
+on conflict do nothing;
+
+insert into public.flha_session_crew (session_id, employee_id, employee_name)
+select
+  s.id,
+  e.id,
+  e.name
+from public.flha_sessions s
+join public.jobs j on s.job_id = j.id
+join public.employees e on e.legacy_mock_id IN ('u-mike', 'u-jake', 'u-tanya')
+where s.is_seed_data = true and s.seed_batch = 'phase_4_safety_seed_2026_05_15'
+  and s.session_date = (CURRENT_DATE - INTERVAL '1 day')::date
+on conflict do nothing;
+
+insert into public.flha_signatures (session_id, employee_id, employee_name, signature_data, signed_at)
+select
+  s.id,
+  e.id,
+  e.name,
+  'data:image/svg+xml;utf8,<svg xmlns=''http://www.w3.org/2000/svg'' width=''420'' height=''120'' viewBox=''0 0 420 120''><path d=''M18 72 C55 20,94 104,132 54 S206 35,242 68 S318 87,390 38'' fill=''none'' stroke=''%231a1a1a'' stroke-width=''5'' stroke-linecap=''round''/><text x=''22'' y=''105'' font-size=''20'' fill=''%2352525b''>' || e.name || '</text></svg>',
+  (CURRENT_DATE - INTERVAL '1 day' || ' 15:30:00')::timestamptz
+from public.flha_sessions s
+join public.employees e on e.legacy_mock_id IN ('u-mike', 'u-jake')
+where s.is_seed_data = true and s.seed_batch = 'phase_4_safety_seed_2026_05_15'
+  and s.session_date = (CURRENT_DATE - INTERVAL '1 day')::date
+on conflict do nothing;

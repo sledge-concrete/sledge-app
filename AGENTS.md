@@ -40,4 +40,18 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - Job Detail reads job, supervisor, crew, employees, activity via Supabase helpers (mock fallback)
   - Create Site inserts via `POST /api/jobs` with auto-generated job numbers (SC-YYYY-NNN)
   - Job Activity notes insert via `POST /api/jobs/[jobId]/activity` with UUID/legacy ID resolution
-- Phase 3-7 pending (Time Tracking, Safety/FLHA, Daily Reports, Storage, Auth). See SQL-PHASES.md for details.
+- Phase 3 COMPLETE:
+  - Tables: `active_shifts`, `time_entries` with normalized per-shift design
+  - RLS policies for read/insert/update with anon/authenticated grants
+  - Seed data: 1 active shift, 5 time entries (various sources/statuses) tagged for cleanup
+  - Helper functions: clockIn, clockOut, addManualEntry, getTimeEntries, reviewTimeEntry
+  - API endpoints: POST /api/time/clock-in, POST /api/time/clock-out, GET/POST /api/time/entries, GET /api/time
+  - App wiring: useTimeTracking hook calls APIs with localStorage fallback
+- Phase 4 COMPLETE:
+  - Tables: `flha_sessions`, `flha_session_hazards`, `flha_session_controls`, `flha_session_crew`, `flha_signatures`
+  - Normalized hazards/controls for reporting queries + performance indexes
+  - Seed data: 1 session (Riverfront) with hazards, controls, crew, 2 signatures, reviewed
+  - Helper functions: createFlhaSession, getJobSessions, getTodaySession, addSignatureToSession, markSessionReviewed, updateFlhaSession, deleteFlhaSession
+  - API endpoints: GET/POST /api/safety/sessions, GET by-job, PUT/DELETE sessions, POST signatures/review
+  - App wiring: useFlhaSessions hook calls APIs with localStorage fallback
+- Phase 5-7 pending (Daily Reports, Storage, Auth). See SQL-PHASES.md for details.
