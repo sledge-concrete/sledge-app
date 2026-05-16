@@ -541,7 +541,7 @@ cross join (
     ('Mechanical'),
     ('Unsafe tools/equipment')
 ) as hazards(hazard_type)
-where s.legacy_mock_id IS NULL and s.is_seed_data = true and s.seed_batch = 'phase_4_safety_seed_2026_05_15'
+where s.is_seed_data = true and s.seed_batch = 'phase_4_safety_seed_2026_05_15'
   and s.session_date = (CURRENT_DATE - INTERVAL '1 day')::date
 on conflict do nothing;
 
@@ -585,3 +585,202 @@ join public.employees e on e.legacy_mock_id IN ('u-mike', 'u-jake')
 where s.is_seed_data = true and s.seed_batch = 'phase_4_safety_seed_2026_05_15'
   and s.session_date = (CURRENT_DATE - INTERVAL '1 day')::date
 on conflict do nothing;
+
+-- Phase 5: Daily Reports Seed Data
+insert into public.daily_reports (
+  legacy_mock_id,
+  report_date,
+  status,
+  supervisor_employee_id,
+  supervisor_name,
+  total_hours,
+  site_count,
+  employee_count,
+  overall_progress_summary,
+  is_seed_data,
+  seed_batch
+)
+select
+  'daily-aggregate-yesterday',
+  (CURRENT_DATE - INTERVAL '1 day')::date,
+  'signed',
+  supervisor.id,
+  supervisor.name,
+  8.75,
+  2,
+  1,
+  'Riverfront morning pour setup and Maple Street driveway forms were completed from split-shift time entries.',
+  true,
+  'phase_5_daily_reports_seed_2026_05_16'
+from public.employees supervisor
+where supervisor.legacy_mock_id = 'u-sarah'
+on conflict (report_date) do update set
+  legacy_mock_id = excluded.legacy_mock_id,
+  status = excluded.status,
+  supervisor_employee_id = excluded.supervisor_employee_id,
+  supervisor_name = excluded.supervisor_name,
+  total_hours = excluded.total_hours,
+  site_count = excluded.site_count,
+  employee_count = excluded.employee_count,
+  overall_progress_summary = excluded.overall_progress_summary,
+  is_seed_data = excluded.is_seed_data,
+  seed_batch = excluded.seed_batch;
+
+insert into public.daily_report_sites (
+  report_id,
+  job_id,
+  legacy_job_id,
+  job_name,
+  project_number,
+  company,
+  address,
+  total_hours,
+  employee_count,
+  progress_summary,
+  safety_session_id,
+  safety_status,
+  safety_signatures,
+  hazards_identified,
+  controls_implemented,
+  incidents,
+  near_misses
+)
+select
+  report.id,
+  job.id,
+  site.legacy_job_id,
+  job.name,
+  job.job_number,
+  job.client_name,
+  job.address,
+  site.total_hours,
+  1,
+  site.progress_summary,
+  safety.id,
+  site.safety_status::public.daily_report_safety_status,
+  site.safety_signatures,
+  site.hazards_identified,
+  site.controls_implemented,
+  0,
+  0
+from public.daily_reports report
+join (
+  values
+    ('job-riverfront', 4.25, 'Morning pour setup completed and Riverfront safety sign-off reviewed.', 'complete', 2, 4, 4),
+    ('job-maple', 4.50, 'Driveway forms and cleanup completed for Maple Street Residential.', 'none', 0, 0, 0)
+) as site(legacy_job_id, total_hours, progress_summary, safety_status, safety_signatures, hazards_identified, controls_implemented) on true
+join public.jobs job on job.legacy_mock_id = site.legacy_job_id
+left join public.flha_sessions safety on safety.job_id = job.id
+  and safety.session_date = report.report_date
+where report.legacy_mock_id = 'daily-aggregate-yesterday'
+on conflict (report_id, job_id) do update set
+  legacy_job_id = excluded.legacy_job_id,
+  job_name = excluded.job_name,
+  project_number = excluded.project_number,
+  company = excluded.company,
+  address = excluded.address,
+  total_hours = excluded.total_hours,
+  employee_count = excluded.employee_count,
+  progress_summary = excluded.progress_summary,
+  safety_session_id = excluded.safety_session_id,
+  safety_status = excluded.safety_status,
+  safety_signatures = excluded.safety_signatures,
+  hazards_identified = excluded.hazards_identified,
+  controls_implemented = excluded.controls_implemented,
+  incidents = excluded.incidents,
+  near_misses = excluded.near_misses;
+
+insert into public.daily_report_employee_hours (
+  report_id,
+  site_id,
+  job_id,
+  employee_id,
+  legacy_employee_id,
+  employee_name,
+  employee_role,
+  hours_worked
+)
+select
+  report.id,
+  report_site.id,
+  job.id,
+  employee.id,
+  employee.legacy_mock_id,
+  employee.name,
+  employee.role,
+  site_hours.hours_worked
+from public.daily_reports report
+join public.daily_report_sites report_site on report_site.report_id = report.id
+join public.jobs job on job.id = report_site.job_id
+join (
+  values
+    ('job-riverfront', 'u-mike', 4.25),
+    ('job-maple', 'u-mike', 4.50)
+) as site_hours(legacy_job_id, legacy_employee_id, hours_worked) on site_hours.legacy_job_id = job.legacy_mock_id
+join public.employees employee on employee.legacy_mock_id = site_hours.legacy_employee_id
+where report.legacy_mock_id = 'daily-aggregate-yesterday'
+on conflict (report_id, site_id, employee_id) do update set
+  job_id = excluded.job_id,
+  legacy_employee_id = excluded.legacy_employee_id,
+  employee_name = excluded.employee_name,
+  employee_role = excluded.employee_role,
+  hours_worked = excluded.hours_worked;
+
+insert into public.daily_report_weather_snapshots (
+  report_id,
+  site_id,
+  job_id,
+  snapshot_time,
+  temp,
+  precip,
+  wind,
+  humidity
+)
+select
+  report.id,
+  report_site.id,
+  report_site.job_id,
+  weather.snapshot_time::public.daily_report_weather_time,
+  weather.temp,
+  weather.precip,
+  weather.wind,
+  weather.humidity
+from public.daily_reports report
+join public.daily_report_sites report_site on report_site.report_id = report.id
+join (
+  values
+    ('08:00', 10, 0, 8, 70),
+    ('12:00', 16, 0, 10, 60),
+    ('17:00', 13, 0, 9, 68)
+) as weather(snapshot_time, temp, precip, wind, humidity) on true
+where report.legacy_mock_id = 'daily-aggregate-yesterday'
+on conflict (site_id, snapshot_time) do update set
+  temp = excluded.temp,
+  precip = excluded.precip,
+  wind = excluded.wind,
+  humidity = excluded.humidity;
+
+insert into public.daily_report_signatures (
+  report_id,
+  signer_employee_id,
+  printed_name,
+  signature_data,
+  signed_at,
+  signature_date
+)
+select
+  report.id,
+  supervisor.id,
+  supervisor.name,
+  'data:image/svg+xml;utf8,<svg xmlns=''http://www.w3.org/2000/svg'' width=''420'' height=''120'' viewBox=''0 0 420 120''><path d=''M24 76 C62 30,96 104,138 56 S212 34,252 70 S318 90,390 42'' fill=''none'' stroke=''%231a1a1a'' stroke-width=''5'' stroke-linecap=''round''/><text x=''22'' y=''105'' font-size=''20'' fill=''%2352525b''>' || supervisor.name || '</text></svg>',
+  ((CURRENT_DATE - INTERVAL '1 day')::date + TIME '18:00:00')::timestamptz,
+  (CURRENT_DATE - INTERVAL '1 day')::date
+from public.daily_reports report
+join public.employees supervisor on supervisor.legacy_mock_id = 'u-sarah'
+where report.legacy_mock_id = 'daily-aggregate-yesterday'
+on conflict (report_id) do update set
+  signer_employee_id = excluded.signer_employee_id,
+  printed_name = excluded.printed_name,
+  signature_data = excluded.signature_data,
+  signed_at = excluded.signed_at,
+  signature_date = excluded.signature_date;

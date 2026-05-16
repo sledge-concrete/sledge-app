@@ -167,9 +167,26 @@ Post-Phase 4 cleanup session — resolved TypeScript build errors blocking produ
 
 Current Supabase next steps:
 
-- Phase 5: Daily Reports signed database snapshots.
+- Phase 5: Daily Reports signed database snapshots — schema drafted, pending push/verification and app wiring.
 - Phase 6: Documents/photos/signatures in Supabase Storage.
 - Phase 7: Supabase Auth and stricter role-based RLS.
+
+### Phase 5 Daily Reports Schema Draft (2026-05-16)
+
+- Created `supabase/migrations/20260516140000_phase_5_daily_reports.sql` for normalized daily report snapshots.
+- Added tables for daily reports, report sites, employee hours, weather snapshots, and report signatures.
+- Added RLS policies, anon/authenticated grants, indexes, and updated_at triggers for the Phase 5 tables.
+- Updated `lib/supabase/types.ts` immediately with Phase 5 Database table entries.
+- Added tagged Phase 5 seed data to `supabase/seed.sql` for one signed aggregate report with two site snapshots, per-site employee hours, weather, and a supervisor signature.
+- Fixed the Phase 5 seed signature timestamp expression after Supabase SQL Editor rejected the first date/time concatenation.
+- Fixed a pre-existing Phase 4 seed typo that referenced a nonexistent `flha_sessions.legacy_mock_id` column.
+- Verified `npm run build` passes.
+- Verified `npx supabase db push --dry-run` reports one pending migration: `20260516140000_phase_5_daily_reports.sql`.
+- Project owner pushed the Phase 5 migration with `npx supabase db push`.
+- Verified `npx supabase migration list` shows `20260516140000` in both Local and Remote history.
+- Project owner ran the Phase 5 seed block successfully in Supabase SQL Editor after the signature timestamp fix.
+- Verified Phase 5 row counts in Supabase SQL Editor: reports/sites/employee-hours/weather/signatures = 1/2/2/6/1.
+- App wiring is intentionally still pending.
 
 ### Log Reconciliation (2026-05-16)
 
