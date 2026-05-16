@@ -54,4 +54,18 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - Helper functions: createFlhaSession, getJobSessions, getTodaySession, addSignatureToSession, markSessionReviewed, updateFlhaSession, deleteFlhaSession
   - API endpoints: GET/POST /api/safety/sessions, GET by-job, PUT/DELETE sessions, POST signatures/review
   - App wiring: useFlhaSessions hook calls APIs with localStorage fallback
+- Build fixes for Vercel deploy COMPLETE (2026-05-15):
+  - `lib/supabase/types.ts` Database type updated with all Phase 3 + Phase 4 tables (active_shifts, time_entries, flha_sessions + 4 normalized tables)
+  - Renamed dynamic route folders with literal backslashes (`\[sessionId\]` → `[sessionId]`, `\[jobId\]` → `[jobId]`)
+  - Job activity route handler updated to Next.js 16 async params signature
+  - Removed `is_seed_data: false` from `JobInsertPayload` (DB default handles it)
+  - `components/ui/select.tsx` wrapper now filters `null` from `onValueChange` (handles `@base-ui/react` v1.4.1 signature change at one place)
+  - `npm run build` passes — production deploy unblocked
 - Phase 5-7 pending (Daily Reports, Storage, Auth). See SQL-PHASES.md for details.
+
+## Conventions Learned This Phase
+
+- When adding new Supabase tables in any phase, update `lib/supabase/types.ts` Database type immediately. Skipping this defers TypeScript errors to production build.
+- Next.js 16 App Router route handlers with dynamic segments require `params: Promise<T>` signature. Verify all existing routes when bumping Next.js.
+- When creating dynamic route folders, verify with `ls` that brackets are literal (`[id]`) not escaped (`\[id\]`).
+- For shadcn-style component wrappers (`components/ui/*.tsx`) over `@base-ui/react`, apply type-narrowing fixes (e.g. null filtering) at the wrapper level so callsites stay clean.
