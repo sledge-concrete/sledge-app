@@ -128,9 +128,9 @@ Tables created:
 
 Goal: store signed daily reports as database snapshots generated from time, safety, jobs, weather, and signatures.
 
-Status: Pending
+Status: In progress
 
-Candidate tables:
+Tables drafted:
 
 - `daily_reports`
 - `daily_report_sites`
@@ -461,16 +461,46 @@ Post-Phase 4 cleanup — resolving TypeScript build errors so production deploy 
   - `20260515230000`
 - Ran `npx supabase db push --dry-run`; CLI reported the remote database is up to date.
 - Confirmed local migration files match the remote migration list through Phase 4.
-- Confirmed no Phase 5, Phase 6, or Phase 7 migration files exist yet.
+- Confirmed that at reconciliation time, no Phase 5, Phase 6, or Phase 7 migration files existed yet.
 - Corrected older status snapshots in this file that still described Sprint 2/Phase 2 as in progress and Phase 4 as pending.
 - Verified `npm run build` passes after reconciliation.
 - Added a guard in the Supabase job detail helper so legacy mock job IDs do not trigger UUID parse errors before falling back to the legacy lookup.
 
 ## Next Database Tasks
 
-1. Phase 5: Daily Reports normalized snapshot tables.
-2. Phase 6: Documents/photos/signatures in Supabase Storage.
-3. Phase 7: Supabase Auth and stricter role-based RLS.
+1. User: run Phase 5 seed SQL in Supabase SQL Editor if seed data is needed.
+2. Test Phase 5 schema shape with SQL queries before app wiring.
+3. Phase 5 app wiring for Daily Reports API/helper/hook.
+4. Phase 6: Documents/photos/signatures in Supabase Storage.
+5. Phase 7: Supabase Auth and stricter role-based RLS.
+
+### 2026-05-16 - Phase 5 Daily Reports Schema Drafted
+
+- Created migration `supabase/migrations/20260516140000_phase_5_daily_reports.sql`.
+- Added enums:
+  - `daily_report_status`
+  - `daily_report_safety_status`
+  - `daily_report_weather_time`
+- Added normalized snapshot tables:
+  - `daily_reports`
+  - `daily_report_sites`
+  - `daily_report_employee_hours`
+  - `daily_report_weather_snapshots`
+  - `daily_report_signatures`
+- Added indexes for report date, supervisor, site/job lookups, employee-hour reporting, weather site/time lookups, and seed cleanup.
+- Added RLS policies and grants for anon/authenticated read/insert/update/delete, matching the pre-auth phased workflow.
+- Added updated_at triggers for mutable report and signature tables.
+- Updated `lib/supabase/types.ts` with Phase 5 table row types and Database table entries as part of the same phase.
+- Added tagged Phase 5 seed rows to `supabase/seed.sql`: one signed aggregate report for yesterday, two site snapshots, per-site employee hours, weather snapshots, and a supervisor signature.
+- Fixed the Phase 5 seed signature timestamp expression after Supabase SQL Editor rejected a concatenated date/time value.
+- Fixed a pre-existing Phase 4 seed typo that referenced `flha_sessions.legacy_mock_id`, which does not exist.
+- Verified `npm run build` passes after Phase 5 type updates.
+- Verified `npx supabase db push --dry-run` detects exactly one pending migration: `20260516140000_phase_5_daily_reports.sql`.
+- Project owner pushed Phase 5 migration with `npx supabase db push`.
+- Verified `npx supabase migration list` shows `20260516140000` in both Local and Remote history.
+- Project owner ran the Phase 5 seed block successfully in Supabase SQL Editor after the signature timestamp fix.
+- Verified Phase 5 row counts in Supabase SQL Editor: reports/sites/employee-hours/weather/signatures = 1/2/2/6/1.
+- App wiring remains pending; current Daily Reports UI still uses local aggregate report persistence.
 
 ---
 

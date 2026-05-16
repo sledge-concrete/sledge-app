@@ -64,8 +64,16 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - Supabase CLI reconciliation COMPLETE (2026-05-16):
   - `npx supabase migration list` shows all local migrations through Phase 4 present in remote history
   - `npx supabase db push --dry-run` reports the remote database is up to date
-  - No Phase 5, Phase 6, or Phase 7 migration files exist yet
-- Phase 5-7 pending (Daily Reports, Storage, Auth). See SQL-PHASES.md for details.
+  - At reconciliation time, no Phase 5, Phase 6, or Phase 7 migration files existed yet
+- Phase 5 Daily Reports IN PROGRESS (2026-05-16):
+  - Draft migration created for normalized daily report snapshot tables
+  - Migration `20260516140000_phase_5_daily_reports.sql` pushed to remote Supabase
+  - `lib/supabase/types.ts` updated with Phase 5 table row types and Database entries
+  - `supabase/seed.sql` updated with tagged Phase 5 seed data and corrected signature timestamp expression
+  - Project owner ran Phase 5 seed block successfully in Supabase SQL Editor
+  - Data-shape verification complete: reports/sites/employee-hours/weather/signatures returned 1/2/2/6/1 rows
+  - App wiring remains pending
+- Phase 5 app wiring and Phase 6-7 remain pending. See SQL-PHASES.md for details.
 
 ## Conventions Learned This Phase
 
