@@ -270,3 +270,138 @@
 @utility sledge-meta {
   color: var(--very-muted-foreground);
 }
+
+/* Legacy WebKit/iOS 12 fallbacks for the 2013 iPad Air test branch. */
+@supports not (translate: 0 0) {
+  .h-svh {
+    height: 100vh;
+  }
+
+  .min-h-svh {
+    min-height: 100vh;
+  }
+
+  .-translate-x-1\/2.-translate-y-1\/2 {
+    transform: translate(-50%, -50%);
+  }
+
+  .-translate-x-1\/2 {
+    transform: translateX(-50%);
+  }
+
+  .-translate-y-1\/2 {
+    transform: translateY(-50%);
+  }
+
+  .-translate-x-px {
+    transform: translateX(-1px);
+  }
+
+  .translate-x-0 {
+    transform: translateX(0);
+  }
+
+  .rotate-180 {
+    transform: rotate(180deg);
+  }
+
+  .scale-110 {
+    transform: scale(1.1);
+  }
+
+  .active\:scale-95:active {
+    transform: scale(0.95);
+  }
+
+  .overflow-auto,
+  .overflow-y-auto,
+  .overflow-x-auto,
+  [data-slot="table-container"],
+  [data-slot="sidebar-content"],
+  [data-slot="scroll-area-viewport"] {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .flex.gap-1 > * + * {
+    margin-left: 0.25rem;
+  }
+
+  .flex.gap-2 > * + * {
+    margin-left: 0.5rem;
+  }
+
+  .flex.gap-3 > * + * {
+    margin-left: 0.75rem;
+  }
+
+  .flex.gap-4 > * + * {
+    margin-left: 1rem;
+  }
+
+  .flex.gap-5 > * + * {
+    margin-left: 1.25rem;
+  }
+
+  .flex.gap-6 > * + * {
+    margin-left: 1.5rem;
+  }
+
+  .flex.flex-col.gap-1 > * + * {
+    margin-left: 0;
+    margin-top: 0.25rem;
+  }
+
+  .flex.flex-col.gap-2 > * + * {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+
+  .flex.flex-col.gap-3 > * + * {
+    margin-left: 0;
+    margin-top: 0.75rem;
+  }
+
+  .flex.flex-col.gap-4 > * + * {
+    margin-left: 0;
+    margin-top: 1rem;
+  }
+
+  .flex.flex-col.gap-5 > * + * {
+    margin-left: 0;
+    margin-top: 1.25rem;
+  }
+
+  .flex.flex-col.gap-6 > * + * {
+    margin-left: 0;
+    margin-top: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .flex.flex-col.sm\:flex-row.gap-2 > * + *,
+    .flex.flex-col.sm\:flex-row.sm\:items-start.gap-2 > * + * {
+      margin-top: 0;
+      margin-left: 0.5rem;
+    }
+
+    .flex.flex-col.sm\:flex-row.gap-3 > * + *,
+    .flex.flex-col.sm\:flex-row.sm\:items-start.gap-3 > * + * {
+      margin-top: 0;
+      margin-left: 0.75rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .flex.flex-col.md\:flex-row.gap-3 > * + *,
+    .flex.flex-col.md\:flex-row.gap-4 > * + * {
+      margin-top: 0;
+    }
+
+    .flex.flex-col.md\:flex-row.gap-3 > * + * {
+      margin-left: 0.75rem;
+    }
+
+    .flex.flex-col.md\:flex-row.gap-4 > * + * {
+      margin-left: 1rem;
+    }
+  }
+}
