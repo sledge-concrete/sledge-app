@@ -24,8 +24,8 @@ export default function AdminPage() {
                   <div className="font-medium">{e.name}</div>
                   <div className="text-sm text-muted-foreground">{e.email}</div>
                 </div>
-                <Badge className="sledge-role-badge font-medium uppercase tracking-[0.04em] text-[10px]">
-                  <Users className="mr-1 h-3 w-3" />
+                <Badge className="sledge-role-badge font-medium uppercase tracking-[0.04em] text-xs rounded-md px-4 py-2">
+                  <Users className="mr-1 h-4 w-4" />
                   {e.role}
                 </Badge>
               </li>

@@ -83,6 +83,88 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 **Phase 2 Complete** — jobs list, detail, create site, and activity notes all read/write from Supabase.
 
+### Phase 3 Time Tracking (2026-05-15)
+
+**Schema & Migration:**
+- Analyzed existing time tracking workflow: active shifts (one per employee), time entries (one per shift, multiple per day for split shifts), time-off requests (moved to Scheduling phase).
+- Created migration `20260515220000_phase_3_time_tracking.sql`:
+  - Tables: `active_shifts` (temporary, converted to entries on clock out), `time_entries` (normalized per shift with source + status)
+  - Indexes on employee_id, job_id, status, clock_in_at, employee+date combo
+  - RLS policies: read all, insert own, update status
+  - Added `update_timestamp()` trigger function for updated_at tracking
+  - Timestamps stored as single clock_in_at + clock_out_at (app converts to date/time strings)
+
+**Seeding & Testing:**
+- Created seed data: 1 active shift (Jake/Carstairs today), 5 time entries (Mike/Tanya/Jake with various sources + statuses)
+- All tagged with `is_seed_data=true`, `seed_batch=phase_3_time_tracking_seed_2026_05_15`
+- Verified in SQL Editor: counts correct, sources/statuses/dates match design
+
+**Supabase Helpers:**
+- Created `lib/supabase/time.ts` with functions: `clockIn()`, `clockOut()`, `addManualEntry()`, `getActiveShifts()`, `getTimeEntries()`, `reviewTimeEntry()`
+- Row converters: `rowToTimeEntry()`, `rowToActiveShift()` (convert DB timestamps to app format)
+
+**API Endpoints & App Wiring:**
+- Created endpoints: `POST /api/time/clock-in`, `POST /api/time/clock-out`, `GET/POST /api/time/entries`, `GET /api/time` (initial load)
+- Updated `useTimeTracking` hook: fetch from `/api/time` on mount, clock in/out/add entry POST to APIs with async/await
+- Kept localStorage fallback for resilience; all actions update local state + persist to Supabase
+- All methods now async with try/catch, graceful fallback to mock if Supabase unavailable
+
+**Phase 3 Complete** — time tracking fully Supabase-backed with API layer and hook wiring.
+
+### Phase 4 Safety/FLHA (2026-05-15)
+
+**Schema & Migration:**
+- Analyzed FLHA workflow: sessions (one per job/date), hazards/controls (arrays), crew (names), signatures (one per worker).
+- Normalized design: separate tables for hazards, controls, crew (not JSON arrays) for reporting/querying.
+- Created migration `20260515230000_phase_4_safety_flha.sql`:
+  - Tables: `flha_sessions`, `flha_session_hazards`, `flha_session_controls`, `flha_session_crew`, `flha_signatures`
+  - Indexes on job_id, session_date, hazard_type, control_type, employee_id for fast queries
+  - RLS policies: read all, insert/update/delete
+  - Updated_at triggers for sessions + signatures
+
+**Supabase Helpers:**
+- Created `lib/supabase/safety.ts` with functions: `createFlhaSession()`, `getJobSessions()`, `getTodaySession()`, `addSignatureToSession()`, `markSessionReviewed()`, `updateFlhaSession()`, `deleteFlhaSession()`
+- Batch operations for performance (insert session + hazards + controls + crew in parallel)
+- Pagination support (50-100 sessions per page for mobile)
+
+**API Endpoints & App Wiring:**
+- Created endpoints: GET/POST /api/safety/sessions, GET by-job/[jobId], PUT/DELETE /api/safety/sessions/[sessionId], POST signatures, POST review
+- Updated `useFlhaSessions` hook: fetch from API on mount, all operations async with localStorage fallback
+- Added cache headers (30s) for performance on mobile networks
+- Maintains same public API (components don't change)
+
+**Seeding & Performance:**
+- Seed data: 1 session (Riverfront yesterday) with 4 hazards, 4 controls, crew (Mike/Jake/Tanya), 2 signatures, reviewed by Ben
+- All tagged with `is_seed_data=true`, `seed_batch=phase_4_safety_seed_2026_05_15`
+- Normalized tables optimize for: frequency queries ("most common hazards?"), crew tracking ("who was on site?"), signature lookups
+
+**Phase 4 Complete** — safety FLHA fully Supabase-backed with normalized schema for reporting.
+
+### Build Fixes for Vercel Deploy (2026-05-15)
+
+Post-Phase 4 cleanup session — resolved TypeScript build errors blocking production deploy.
+
+**Root causes identified:**
+- Dynamic route folders created with literal backslashes (`\[sessionId\]`, `\[jobId\]`) — filesystem issue.
+- Next.js 16 App Router: dynamic route params are now `Promise<T>` — job activity route still using old signature.
+- `JobInsertPayload` declared `is_seed_data: false` (literal), rejected by Supabase strict insert type (`never` for excess properties).
+- `@base-ui/react` v1.4.1 `Select.onValueChange` now passes `string | null` — 8 callsites in time-page-client failed type check.
+- `lib/supabase/types.ts` Database type missing all Phase 3/4 tables — every `.from("flha_*")` and `.from("active_shifts")` failed.
+- DB-returned strings cast to union types (`FlhaHazard`/`FlhaControl`) without explicit cast.
+
+**Surgical fixes (one place, broad impact):**
+- Renamed offending route folders to proper Next.js dynamic syntax.
+- Updated job activity `POST` handler to `params: Promise<{ jobId: string }>`.
+- Removed dead `is_seed_data: false` from `JobInsertPayload` type + API route insert payload.
+- Wrapped `Select` in `components/ui/select.tsx` to filter null in `onValueChange` — no callsite changes needed.
+- Added Phase 3 (active_shifts, time_entries) and Phase 4 (flha_sessions + 4 normalized tables) row types and Database table entries in `types.ts`.
+- Cast `hazards`/`controls` to `FlhaHazard[]`/`FlhaControl[]` in `rowToFlhaSession`.
+- Added supabase null guard in `rowToFlhaSession`.
+
+**Result:** `npm run build` passes cleanly. All static, SSG, and dynamic routes generate. Vercel deploy unblocked.
+
+**Lesson for future phases:** when adding Supabase tables, update `lib/supabase/types.ts` Database type immediately as part of the same change — don't defer.
+
 Current Supabase next steps:
 
 - Phase 3: Time Tracking tables and persistence.
@@ -156,3 +238,57 @@ Current Supabase next steps:
 - Increased textarea font to 18px with inline style.
 - Changed jobs list sort order: ascending by job_number → descending by created_at (newest first).
 - GPS button now populates address field with coordinate string (lat, lng format).
+
+### UI & Component Overhaul Session (2026-05-15)
+
+**Objective:** Improve font sizing, spacing, and component consistency across the app. Address dropdown positioning bug caused by overflow constraints.
+
+**Changes by Section:**
+
+**Sidebar Navigation (app-sidebar.tsx):**
+- Increased vertical gap between icons: `gap-0` → `gap-2`.
+
+**Job Detail Tabs (jobs/[id]/page.tsx):**
+- Tab font size: `text-base` → `text-lg`.
+- Tab layout: centered → full-width even distribution (`justify-between`).
+- Achieved with: TabsList `w-full flex justify-between` instead of `justify-center`.
+
+**Jobs List Counter Badge (jobs/jobs-view.tsx):**
+- Added: `text-base` font size + `px-4 py-2` padding.
+- Shape: `rounded-lg` → `rounded-md` (less pill-shaped).
+- Result: larger, more rectangular badge with proper breathing room.
+
+**Filter Section & Table Headers (jobs/jobs-view.tsx):**
+- Filter by Status label: `text-sm` → `text-base`.
+- Filter buttons: padding `px-3 py-1.5` → `px-4 py-2`, font `text-xs` → `text-sm`.
+- Table headers: height `h-11` → `h-12`, font `text-sm` → `text-base`.
+
+**Admin Page Role Badges (dashboard/admin/page.tsx):**
+- Shape: added `rounded-md` for consistent rectangular styling.
+- Padding: `px-3 py-1.5` for balanced breathing room.
+- Icon: `h-3 w-3` → `h-4 w-4`.
+- Font: `text-[10px]` → `text-xs`.
+
+**Time Tracking Stat Cards (time/time-page-client.tsx):**
+- **New feature:** Added unit labels (active, h, pending, request) displayed next to values.
+- **Layout:** Units in `text-lg`, slightly smaller than value `text-5xl`.
+- **Icon repositioning:** Moved from inline with title to `absolute top-4 right-4` (top-right corner).
+- **Icon size:** `h-6 w-6`.
+- **Typography improvements:** Title `text-xs` → `text-sm`, helper text `text-xs` → `text-base`.
+
+**Dropdown Component Fix (Card + Select):**
+- **Root cause:** Card component had `overflow-hidden` CSS class which clipped dropdown menus, forcing the browser to reposition them at the card's top edge instead of below the select trigger.
+- **Solution:** Removed `overflow-hidden` from `components/ui/card.tsx` to allow dropdowns to render outside card bounds.
+- **Component replacement:** Replaced native HTML `<select>` (via NativeSelect wrapper) with shadcn `Select` component across time page.
+  - Removed `NativeSelect` function definition from `time-page-client.tsx`.
+  - Updated all 8 select usages: Clock In (employee, job), Manual Entry (employee, job), Split Shift (employee, jobs), Time Off (employee).
+  - New structure: `<Select>` → `<SelectTrigger>` → `<SelectContent>` → `<SelectItem>` (items).
+  - Styling: triggers get `min-h-11 w-full bg-background px-3`, content gets `z-[60]` for proper z-index stacking.
+- **Result:** Dropdowns now position correctly below the trigger, matching the style of daily reports supervisor dropdown.
+
+**Impact Summary:**
+- 15+ individual UI/UX improvements across 6 major components.
+- 2 architectural fixes (overflow constraint removal, dropdown replacement).
+- Consistent sizing, spacing, and shape language applied throughout the app.
+- Dropdown behavior now matches user expectations (appears below trigger, not at page top).
+- All changes preserve existing functionality while improving visual consistency and usability.

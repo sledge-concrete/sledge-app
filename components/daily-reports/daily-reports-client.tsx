@@ -159,7 +159,7 @@ export function DailyReportsClient() {
         }
       />
 
-      <div className="mb-4 flex flex-col gap-3 rounded-lg border bg-card p-4 md:flex-row md:items-end md:justify-between">
+      <div className="mb-4 flex flex-col gap-3 rounded-md border bg-card p-4 md:flex-row md:items-end md:justify-between">
         <Field label="Filter by date">
           <div className="flex gap-2">
             <Input type="date" value={dateFilter} onChange={(event) => setDateFilter(event.target.value)} className="min-h-11" />
@@ -171,16 +171,16 @@ export function DailyReportsClient() {
           </div>
         </Field>
         <div className="flex flex-wrap gap-2 text-sm">
-          <Badge variant="outline" className="rounded-lg">
+          <Badge variant="outline" className="rounded-md px-4 py-2">
             {reports.length} total
           </Badge>
-          <Badge className="rounded-lg border border-emerald-200 bg-emerald-100 text-emerald-800">
+          <Badge className="rounded-md border border-emerald-200 bg-emerald-100 text-emerald-800 px-4 py-2">
             {reports.filter((report) => report.status === "signed").length} signed
           </Badge>
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-lg border bg-card">
+      <div className="overflow-hidden rounded-md border bg-card">
         {filteredReports.length === 0 ? (
           <div className="flex min-h-56 flex-col items-center justify-center gap-2 p-6 text-center text-muted-foreground">
             <Search className="h-8 w-8" />
@@ -218,7 +218,7 @@ export function DailyReportsClient() {
                       <TableCell>{report.totalHours.toFixed(1)}h</TableCell>
                       <TableCell className="hidden lg:table-cell">{report.supervisorName}</TableCell>
                       <TableCell>
-                        <Badge className="rounded-lg border border-emerald-200 bg-emerald-100 text-emerald-800">Signed</Badge>
+                        <Badge className="rounded-md border border-emerald-200 bg-emerald-100 text-emerald-800">Signed</Badge>
                       </TableCell>
                       <TableCell className="px-4">
                         <div className="flex justify-end">
@@ -279,7 +279,7 @@ export function DailyReportsClient() {
                     </SelectContent>
                   </Select>
                 </Field>
-                <div className="rounded-lg border bg-muted/40 p-3">
+                <div className="rounded-md border bg-muted/40 p-3">
                   <div className="text-xs font-medium uppercase tracking-[0.04em] text-muted-foreground">Auto-filled</div>
                   <div className="mt-2 text-sm">
                     {workedSites.length} sites / {employeePreview.length} crew /{" "}
@@ -289,12 +289,12 @@ export function DailyReportsClient() {
               </div>
 
               {workedSites.length === 0 ? (
-                <div className="mt-5 rounded-lg border-2 border-dashed p-8 text-center text-muted-foreground">
+                <div className="mt-5 rounded-md border-2 border-dashed p-8 text-center text-muted-foreground">
                   No time entries or active clock-ins were found for this date.
                 </div>
               ) : (
                 <div className="mt-5 space-y-5">
-                  <section className="rounded-lg border">
+                  <section className="rounded-md border">
                     <div className="border-b px-4 py-3">
                       <h3 className="text-lg font-medium">Progress Summary</h3>
                     </div>
@@ -333,7 +333,7 @@ export function DailyReportsClient() {
                     )}
                   />
 
-                  <section className="rounded-lg border">
+                  <section className="rounded-md border">
                     <div className="border-b px-4 py-3">
                       <h3 className="text-lg font-medium">Supervisor Sign-Off</h3>
                     </div>
@@ -342,7 +342,7 @@ export function DailyReportsClient() {
                         <Label className="mb-2">Signature</Label>
                         <SignatureCanvas onSignatureChange={setSignatureData} isLocked={false} />
                       </div>
-                      <div className="rounded-lg border bg-muted/40 p-4">
+                      <div className="rounded-md border bg-muted/40 p-4">
                         <div className="text-xs font-medium uppercase tracking-[0.04em] text-muted-foreground">Printed Name</div>
                         <p className="mt-2 text-lg font-medium">{employees.find((employee) => employee.id === supervisorId)?.name}</p>
                         <p className="mt-2 text-sm sledge-meta">Signing saves this daily report as signed immediately.</p>
@@ -383,7 +383,7 @@ function AutoFilledPreview({
   safetyByJobId: Record<string, DailyReportSafetyEntry>;
 }) {
   return (
-    <section className="rounded-lg border">
+    <section className="rounded-md border">
       <div className="border-b px-4 py-3">
         <h3 className="text-lg font-medium">Auto-Filled Report Data</h3>
       </div>
@@ -393,7 +393,7 @@ function AutoFilledPreview({
             <CalendarDays className="h-4 w-4 text-primary" />
             Worked Sites / {selectedDate}
           </div>
-          <div className="overflow-hidden rounded-lg border">
+          <div className="overflow-hidden rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -430,7 +430,7 @@ function AutoFilledPreview({
             <Users className="h-4 w-4 text-primary" />
             Employee Summary
           </div>
-          <div className="overflow-hidden rounded-lg border">
+          <div className="overflow-hidden rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -456,13 +456,13 @@ function AutoFilledPreview({
 
         <div className="grid gap-4 lg:grid-cols-2">
           {workedSites.map((site) => (
-            <div key={site.jobId} className="rounded-lg border p-4">
+            <div key={site.jobId} className="rounded-md border p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h4 className="font-medium">{site.jobName}</h4>
                   <p className="mt-1 text-xs text-muted-foreground">{site.address}</p>
                 </div>
-                <Badge variant="outline" className="rounded-lg">
+                <Badge variant="outline" className="rounded-md">
                   {site.totalHours.toFixed(1)}h
                 </Badge>
               </div>
@@ -494,7 +494,7 @@ function WeatherPreview({ weatherState }: { weatherState?: WeatherState }) {
       </div>
       <div className="grid gap-2 sm:grid-cols-3">
         {(weatherState.weather ?? createFallbackWeather()).map((snapshot) => (
-          <div key={snapshot.time} className="rounded-lg bg-muted/50 p-2 text-xs">
+          <div key={snapshot.time} className="rounded-md bg-muted/50 p-2 text-xs">
             <div className="font-medium">{snapshot.time}</div>
             <div className="mt-1">{snapshot.temp} C</div>
             <div className="text-muted-foreground">{snapshot.precip}mm / {snapshot.wind}km/h / {snapshot.humidity}%</div>
@@ -513,15 +513,15 @@ function SafetyPreview({ safety }: { safety: DailyReportSafetyEntry }) {
         Safety
       </div>
       <div className="grid grid-cols-3 gap-2 text-xs">
-        <div className="rounded-lg bg-muted/50 p-2">
+        <div className="rounded-md bg-muted/50 p-2">
           <div className="text-muted-foreground">Status</div>
           <div className="mt-1 font-medium">{safety.status === "none" ? "No FLHA" : safety.status}</div>
         </div>
-        <div className="rounded-lg bg-muted/50 p-2">
+        <div className="rounded-md bg-muted/50 p-2">
           <div className="text-muted-foreground">Signed</div>
           <div className="mt-1 font-medium">{safety.signatures}</div>
         </div>
-        <div className="rounded-lg bg-muted/50 p-2">
+        <div className="rounded-md bg-muted/50 p-2">
           <div className="text-muted-foreground">Hazards</div>
           <div className="mt-1 font-medium">{safety.hazardsIdentified}</div>
         </div>
@@ -540,27 +540,27 @@ function ReportDetails({ report }: { report: DailyAggregateReport }) {
 
       <div className="grid gap-4 lg:grid-cols-2">
         {report.siteSummaries.map((site) => (
-          <div key={site.jobId} className="rounded-lg border bg-card p-4">
+          <div key={site.jobId} className="rounded-md border bg-card p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="text-base font-medium">{site.jobName}</h3>
                 <p className="mt-1 text-xs text-muted-foreground">{site.projectNumber}</p>
               </div>
-              <Badge variant="outline" className="rounded-lg">
+              <Badge variant="outline" className="rounded-md">
                 {site.totalHours.toFixed(1)}h
               </Badge>
             </div>
             <p className="mt-3 whitespace-pre-wrap text-sm">{site.progressSummary}</p>
             <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
-              <div className="rounded-lg bg-muted/50 p-2">
+              <div className="rounded-md bg-muted/50 p-2">
                 <div className="text-muted-foreground">Crew</div>
                 <div className="mt-1 font-medium">{site.employeeCount}</div>
               </div>
-              <div className="rounded-lg bg-muted/50 p-2">
+              <div className="rounded-md bg-muted/50 p-2">
                 <div className="text-muted-foreground">Safety</div>
                 <div className="mt-1 font-medium">{site.safety.status === "none" ? "No FLHA" : site.safety.signatures}</div>
               </div>
-              <div className="rounded-lg bg-muted/50 p-2">
+              <div className="rounded-md bg-muted/50 p-2">
                 <div className="text-muted-foreground">Weather</div>
                 <div className="mt-1 font-medium">{site.weather[1]?.temp ?? site.weather[0]?.temp} C</div>
               </div>

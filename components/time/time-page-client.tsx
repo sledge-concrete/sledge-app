@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { employees, getEmployee } from "@/lib/mock/employees";
@@ -157,10 +158,10 @@ export function TimePageClient() {
       <PageHeader title="Time Tracking" description="Clock activity, daily entries, split shifts, time-off requests, and approvals." />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Active Now" value={activeShifts.length} icon={Clock} helper="clocked in" />
-        <StatCard title="Today Hours" value={todayHours.toFixed(1)} icon={TimerReset} helper="submitted today" />
-        <StatCard title="Pending Time" value={pendingEntries.length} icon={FileClock} helper="awaiting approval" />
-        <StatCard title="Time Off" value={pendingTimeOff.length} icon={CalendarDays} helper="pending requests" />
+        <StatCard title="Active Now" value={activeShifts.length} unit="active" icon={Clock} helper="clocked in" />
+        <StatCard title="Today Hours" value={todayHours.toFixed(1)} unit="h" icon={TimerReset} helper="submitted today" />
+        <StatCard title="Pending Time" value={pendingEntries.length} unit="pending" icon={FileClock} helper="awaiting approval" />
+        <StatCard title="Time Off" value={pendingTimeOff.length} unit="request" icon={CalendarDays} helper="pending requests" />
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
@@ -176,22 +177,32 @@ export function TimePageClient() {
             <form onSubmit={handleClockSubmit} className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-2">
                 <Field label="Employee">
-                  <NativeSelect value={clockEmployeeId} onChange={(value) => setClockEmployeeId(value)}>
-                    {employees.map((employee) => (
-                      <option key={employee.id} value={employee.id}>
-                        {employee.name}
-                      </option>
-                    ))}
-                  </NativeSelect>
+                  <Select value={clockEmployeeId} onValueChange={setClockEmployeeId}>
+                    <SelectTrigger className="min-h-11 w-full bg-background px-3">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent align="start" className="z-[60]">
+                      {employees.map((employee) => (
+                        <SelectItem key={employee.id} value={employee.id}>
+                          {employee.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </Field>
                 <Field label="Job">
-                  <NativeSelect value={activeShift?.jobId ?? clockJobId} onChange={(value) => setClockJobId(value)} disabled={!!activeShift}>
-                    {activeJobs.map((job) => (
-                      <option key={job.id} value={job.id}>
-                        {job.name}
-                      </option>
-                    ))}
-                  </NativeSelect>
+                  <Select value={activeShift?.jobId ?? clockJobId} onValueChange={setClockJobId} disabled={!!activeShift}>
+                    <SelectTrigger className="min-h-11 w-full bg-background px-3">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent align="start" className="z-[60]">
+                      {activeJobs.map((job) => (
+                        <SelectItem key={job.id} value={job.id}>
+                          {job.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </Field>
               </div>
 
@@ -233,28 +244,38 @@ export function TimePageClient() {
             <form onSubmit={handleManualSubmit} className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-2">
                 <Field label="Employee">
-                  <NativeSelect
+                  <Select
                     value={manualValues.employeeId}
-                    onChange={(value) => setManualValues((current) => ({ ...current, employeeId: value }))}
+                    onValueChange={(value) => setManualValues((current) => ({ ...current, employeeId: value }))}
                   >
-                    {employees.map((employee) => (
-                      <option key={employee.id} value={employee.id}>
-                        {employee.name}
-                      </option>
-                    ))}
-                  </NativeSelect>
+                    <SelectTrigger className="min-h-11 w-full bg-background px-3">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent align="start" className="z-[60]">
+                      {employees.map((employee) => (
+                        <SelectItem key={employee.id} value={employee.id}>
+                          {employee.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </Field>
                 <Field label="Job">
-                  <NativeSelect
+                  <Select
                     value={manualValues.jobId}
-                    onChange={(value) => setManualValues((current) => ({ ...current, jobId: value }))}
+                    onValueChange={(value) => setManualValues((current) => ({ ...current, jobId: value }))}
                   >
-                    {assignableJobs.map((job) => (
-                      <option key={job.id} value={job.id}>
-                        {job.name}
-                      </option>
-                    ))}
-                  </NativeSelect>
+                    <SelectTrigger className="min-h-11 w-full bg-background px-3">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent align="start" className="z-[60]">
+                      {assignableJobs.map((job) => (
+                        <SelectItem key={job.id} value={job.id}>
+                          {job.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </Field>
                 <Field label="Date">
                   <Input
@@ -323,13 +344,18 @@ export function TimePageClient() {
             <form onSubmit={handleSplitSubmit} className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-2">
                 <Field label="Employee">
-                  <NativeSelect value={splitEmployeeId} onChange={(value) => setSplitEmployeeId(value)}>
-                    {employees.map((employee) => (
-                      <option key={employee.id} value={employee.id}>
-                        {employee.name}
-                      </option>
-                    ))}
-                  </NativeSelect>
+                  <Select value={splitEmployeeId} onValueChange={setSplitEmployeeId}>
+                    <SelectTrigger className="min-h-11 w-full bg-background px-3">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent align="start" className="z-[60]">
+                      {employees.map((employee) => (
+                        <SelectItem key={employee.id} value={employee.id}>
+                          {employee.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </Field>
                 <Field label="Date">
                   <Input type="date" value={splitDate} onChange={(event) => setSplitDate(event.target.value)} className="min-h-11" required />
@@ -340,13 +366,18 @@ export function TimePageClient() {
                 {splitRows.map((row, index) => (
                   <div key={row.id} className="grid gap-3 rounded-lg border p-3 md:grid-cols-[minmax(180px,1fr)_120px_120px_120px_44px]">
                     <Field label={`Job ${index + 1}`}>
-                      <NativeSelect value={row.jobId} onChange={(value) => updateSplitRow(row.id, { jobId: value })}>
-                        {assignableJobs.map((job) => (
-                          <option key={job.id} value={job.id}>
-                            {job.name}
-                          </option>
-                        ))}
-                      </NativeSelect>
+                      <Select value={row.jobId} onValueChange={(value) => updateSplitRow(row.id, { jobId: value })}>
+                        <SelectTrigger className="min-h-11 w-full bg-background px-3">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent align="start" className="z-[60]">
+                          {assignableJobs.map((job) => (
+                            <SelectItem key={job.id} value={job.id}>
+                              {job.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </Field>
                     <Field label="Start">
                       <Input
@@ -409,16 +440,21 @@ export function TimePageClient() {
           <CardContent>
             <form onSubmit={handleTimeOffSubmit} className="space-y-4">
               <Field label="Employee">
-                <NativeSelect
+                <Select
                   value={timeOffValues.employeeId}
-                  onChange={(value) => setTimeOffValues((current) => ({ ...current, employeeId: value }))}
+                  onValueChange={(value) => setTimeOffValues((current) => ({ ...current, employeeId: value }))}
                 >
-                  {employees.map((employee) => (
-                    <option key={employee.id} value={employee.id}>
-                      {employee.name}
-                    </option>
-                  ))}
-                </NativeSelect>
+                  <SelectTrigger className="min-h-11 w-full bg-background px-3">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align="start" className="z-[60]">
+                    {employees.map((employee) => (
+                      <SelectItem key={employee.id} value={employee.id}>
+                        {employee.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </Field>
               <div className="grid gap-3 sm:grid-cols-2">
                 <Field label="Start Date">
@@ -473,22 +509,26 @@ function StatCard({
   title,
   value,
   helper,
+  unit,
   icon: Icon,
 }: {
   title: string;
   value: string | number;
   helper: string;
+  unit: string;
   icon: LucideIcon;
 }) {
   return (
-    <Card>
-      <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-xs font-medium uppercase tracking-[0.04em] text-muted-foreground">{title}</CardTitle>
-        <Icon className="h-4 w-4 text-muted-foreground" />
+    <Card className="relative">
+      <div className="absolute top-4 right-4">
+        <Icon className="h-6 w-6 text-muted-foreground" />
+      </div>
+      <CardHeader className="space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium uppercase tracking-[0.04em] text-muted-foreground">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="mt-2 text-5xl font-medium leading-none">{value}</div>
-        <p className="mt-3 text-xs sledge-meta">{helper}</p>
+        <div className="mt-2 text-5xl font-medium leading-none">{value} <span className="text-lg">{unit}</span></div>
+        <p className="mt-3 text-base sledge-meta">{helper}</p>
       </CardContent>
     </Card>
   );
@@ -640,28 +680,6 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-function NativeSelect({
-  value,
-  onChange,
-  children,
-  disabled,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  children: ReactNode;
-  disabled?: boolean;
-}) {
-  return (
-    <select
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      disabled={disabled}
-      className="min-h-11 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-60"
-    >
-      {children}
-    </select>
-  );
-}
 
 function getEmployeeName(employeeId: string) {
   return getEmployee(employeeId)?.name ?? "Unknown";

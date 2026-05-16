@@ -60,7 +60,6 @@ export async function POST(request: Request) {
       longitude: body.longitude,
       service_type: body.service_type ?? null,
       notes: body.notes ?? null,
-      is_seed_data: false,
     })
     .select()
     .single();
