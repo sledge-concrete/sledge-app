@@ -185,6 +185,9 @@ Current Supabase next steps:
 - Reworked only the root landing page styling into `app/page.module.css` to test older iPad Safari rendering.
 - Removed landing-page reliance on backdrop blur, Tailwind opacity utility output, flex gaps, and newer viewport units.
 - Kept dashboard/internal app pages unchanged until the landing-page test is verified on the 2013 iPad Air.
+- Created the `retro-fit` branch for continued old-browser compatibility work away from `main`.
+- Added a scoped legacy WebKit fallback block in `app/globals.css` for old iPad Safari: `svh` fallback, Tailwind 4 transform fallbacks, momentum scrolling, and flex-gap spacing fallbacks.
+- Updated the PostCSS pipeline on `retro-fit` to unwrap Tailwind 4 cascade layers after generation, because iOS 12 Safari does not understand `@layer` and can otherwise ignore most of the app stylesheet.
 
 ### Daily Reports Tablet Modal Fixes
 
