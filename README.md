@@ -167,11 +167,24 @@ Post-Phase 4 cleanup session — resolved TypeScript build errors blocking produ
 
 Current Supabase next steps:
 
-- Phase 3: Time Tracking tables and persistence.
-- Phase 4: Safety/FLHA normalized tables and persistence.
 - Phase 5: Daily Reports signed database snapshots.
-- Phase 6: Documents/photos in Supabase Storage.
+- Phase 6: Documents/photos/signatures in Supabase Storage.
 - Phase 7: Supabase Auth and stricter role-based RLS.
+
+### Log Reconciliation (2026-05-16)
+
+- Re-read the project markdown logs and compared them against local migrations, API routes, Supabase helper files, and dashboard routes.
+- Checked Supabase CLI migration history with `npx supabase migration list`; every local migration through Phase 4 is present remotely.
+- Checked `npx supabase db push --dry-run`; CLI reported the remote database is up to date.
+- Updated stale log language so Phase 2, Phase 3, and Phase 4 are consistently marked complete, with Phase 5 as the next database phase.
+- Verified `npm run build` still passes.
+- Added a UUID-format guard to the Supabase job detail UUID lookup so static legacy job routes skip the UUID query and avoid non-fatal Postgres `22P02` fallback logs during build.
+
+### Landing Page Legacy iPad Compatibility Test (2026-05-16)
+
+- Reworked only the root landing page styling into `app/page.module.css` to test older iPad Safari rendering.
+- Removed landing-page reliance on backdrop blur, Tailwind opacity utility output, flex gaps, and newer viewport units.
+- Kept dashboard/internal app pages unchanged until the landing-page test is verified on the 2013 iPad Air.
 
 ### Daily Reports Tablet Modal Fixes
 
@@ -192,6 +205,7 @@ Current Supabase next steps:
 - Added local browser persistence for time tracking test flows using the same `localStorage` pattern as the Safety module.
 - Added time tracking seed data and domain types to help validate the future database shape before wiring real persistence.
 - Note: time-off requests may move into Scheduling later, but remain on Time Tracking for now to test request and approval data flow.
+- Superseded by Phase 3: active shifts and time entries now read/write through Supabase-backed API routes with localStorage fallback.
 
 ### Browser Tab Favicon
 
@@ -210,7 +224,8 @@ Current Supabase next steps:
 - Added FLHA domain types and mock data for `flha_sessions` and `flha_signatures`, including the requested Riverfront, Maple Street, and Highway 2 scenarios.
 - Added tablet-first routes for `/dashboard/safety`, `/dashboard/safety/[jobId]`, and `/dashboard/safety/review`.
 - Digitized the FLHA header fields, hazard checklist, required controls checklist, comments, validation, read-only submitted view, worker signature flow, review table, and on-demand PDF export with `@react-pdf/renderer`.
-- Mock persistence is browser-local through `localStorage`; no real database writes have been added yet.
+- At this stage, mock persistence was browser-local through `localStorage`; no real database writes had been added yet.
+- Superseded by Phase 4: FLHA sessions, normalized hazards/controls/crew, signatures, review, update, and delete flows now read/write through Supabase-backed API routes with localStorage fallback.
 
 ### Phase 2.2 Create Site Insert & Safety Fixes (2026-05-15)
 

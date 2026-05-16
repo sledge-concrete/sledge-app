@@ -30,7 +30,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - Use normalized rows for long-term reporting data, especially safety/FLHA, daily reports, and time tracking.
 - Signatures and uploaded files should move to Supabase Storage in a later phase, with SQL metadata.
 
-## Current Supabase Status (as of 2026-05-15)
+## Current Supabase Status (as of 2026-05-16)
 
 - Phase 0 Supabase project setup is complete.
 - Phase 1 core tables complete: `employees`, `jobs`, `job_crew`, `job_activity` with seed data.
@@ -61,6 +61,10 @@ This version has breaking changes — APIs, conventions, and file structure may 
   - Removed `is_seed_data: false` from `JobInsertPayload` (DB default handles it)
   - `components/ui/select.tsx` wrapper now filters `null` from `onValueChange` (handles `@base-ui/react` v1.4.1 signature change at one place)
   - `npm run build` passes — production deploy unblocked
+- Supabase CLI reconciliation COMPLETE (2026-05-16):
+  - `npx supabase migration list` shows all local migrations through Phase 4 present in remote history
+  - `npx supabase db push --dry-run` reports the remote database is up to date
+  - No Phase 5, Phase 6, or Phase 7 migration files exist yet
 - Phase 5-7 pending (Daily Reports, Storage, Auth). See SQL-PHASES.md for details.
 
 ## Conventions Learned This Phase

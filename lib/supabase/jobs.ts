@@ -61,6 +61,7 @@ export async function insertJobActivity(
 export async function getJobDetailByUUID(jobId: string): Promise<SupabaseJobDetail | null> {
   const supabase = createServerSupabaseClient();
   if (!supabase) return null;
+  if (!isUuid(jobId)) return null;
 
   const { data: jobRow, error: jobError } = await supabase
     .from("jobs")
@@ -194,6 +195,10 @@ function mapEmployee(row: EmployeeRow): SourceEmployee {
     email: row.email,
     initials: row.initials,
   };
+}
+
+function isUuid(value: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
 function stripSourceId(employee: SourceEmployee): Employee {

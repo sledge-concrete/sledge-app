@@ -49,17 +49,13 @@ Every time the database schema, migrations, seed data, storage buckets, RLS poli
 ## Current Sprint Status
 
 - Sprint 1 complete: Supabase project setup, Phase 1 core tables, seed data, remote verification.
-- Sprint 2 in progress: Jobs/Sites read path.
-- Complete in Sprint 2:
-  - Jobs list read migration and RLS policies.
-  - `/api/jobs` Supabase read wiring.
-  - Jobs list UI verified against Supabase data.
-  - Job Detail Supabase read helper.
-  - Job Detail page Supabase read wiring for job, supervisor, crew, employees, and activity.
-- Pending in Sprint 2:
-  - Create Site insert path.
-  - Job activity insert path.
-  - Documents/photos migration to Storage, likely later in Phase 6 unless needed sooner.
+- Sprint 2 complete: Jobs/Sites read and write path.
+- Sprint 3 complete: Time Tracking schema, API routes, hook wiring, and seed data.
+- Sprint 4 complete: Safety/FLHA schema, API routes, hook wiring, seed data, and build fixes.
+- Current database focus: Phase 5 Daily Reports normalized snapshot tables.
+- Later database focus:
+  - Phase 6 Documents/photos/signatures in Supabase Storage.
+  - Phase 7 Supabase Auth and stricter role-based RLS.
 
 ## Phase Overview
 
@@ -93,14 +89,14 @@ Candidate tables:
 
 Goal: move Sites, Job detail, Create Site, and job activity reads/writes from hardcoded mock data to Supabase.
 
-Status: In progress
+Status: Complete
 
-Candidate database work:
+Completed database work:
 
 - Job list/query migration. Complete.
 - Job detail query migration. Complete for reads.
-- Create Site insert path.
-- Job activity insert/read path.
+- Create Site insert path. Complete.
+- Job activity insert/read path. Complete.
 
 ### Phase 3 - Time Tracking
 
@@ -118,14 +114,15 @@ Tables created:
 
 Goal: replace browser `localStorage` FLHA persistence with Supabase tables.
 
-Status: Pending
+Status: Complete
 
-Candidate tables:
+Tables created:
 
 - `flha_sessions`
 - `flha_signatures`
 - `flha_session_hazards`
 - `flha_session_controls`
+- `flha_session_crew`
 
 ### Phase 5 - Daily Reports
 
@@ -428,7 +425,7 @@ Resolved recommendations for Phase 1:
   - 2 signatures (Mike, Jake both signed)
   - Session reviewed by Ben Sledge
   - All tagged: `is_seed_data=true`, `seed_batch=phase_4_safety_seed_2026_05_15`
-- Phase 4 ready to push + test end-to-end.
+- Phase 4 migration was created, pushed to the remote database, and wired into the app.
 
 ## Build Fixes for Vercel Deploy (2026-05-15)
 
@@ -452,12 +449,28 @@ Post-Phase 4 cleanup — resolving TypeScript build errors so production deploy 
 
 **Result:** `npm run build` passes — all routes generate (static, SSG, dynamic). Vercel deploy unblocked.
 
+## Supabase CLI Reconciliation (2026-05-16)
+
+- Ran `npx supabase migration list`; all local migrations are present in remote migration history:
+  - `20260515180000`
+  - `20260515190000`
+  - `20260515200000`
+  - `20260515210000`
+  - `20260515211000`
+  - `20260515220000`
+  - `20260515230000`
+- Ran `npx supabase db push --dry-run`; CLI reported the remote database is up to date.
+- Confirmed local migration files match the remote migration list through Phase 4.
+- Confirmed no Phase 5, Phase 6, or Phase 7 migration files exist yet.
+- Corrected older status snapshots in this file that still described Sprint 2/Phase 2 as in progress and Phase 4 as pending.
+- Verified `npm run build` passes after reconciliation.
+- Added a guard in the Supabase job detail helper so legacy mock job IDs do not trigger UUID parse errors before falling back to the legacy lookup.
+
 ## Next Database Tasks
 
-1. User: `npx supabase db push` (Phase 4 migration) — done
-2. User: Run seed data in Supabase SQL Editor (if needed) — pending verification
-3. Test Phase 4 end-to-end (create FLHA, add signatures, review in app) — pending
-4. Phase 5: Daily Reports normalized snapshot tables.
+1. Phase 5: Daily Reports normalized snapshot tables.
+2. Phase 6: Documents/photos/signatures in Supabase Storage.
+3. Phase 7: Supabase Auth and stricter role-based RLS.
 
 ---
 
