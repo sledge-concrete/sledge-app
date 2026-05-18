@@ -331,3 +331,13 @@ Current Supabase next steps:
 - Consistent sizing, spacing, and shape language applied throughout the app.
 - Dropdown behavior now matches user expectations (appears below trigger, not at page top).
 - All changes preserve existing functionality while improving visual consistency and usability.
+
+### Time Tracking Focused Redesign (2026-05-16)
+
+- Reworked `components/time/time-page-client.tsx` into a single-column workflow.
+- Added a sticky logged-in employee selector above all time cards.
+- Rebuilt the four primary time cards: Clock In / Out, End-of-Day Entry, Split Shift, and Time-Off Request.
+- Added live calculated displays for active clock time, manual entry hours, split-shift total hours, and time-off duration.
+- Added a true running `HH:MM:SS` clock-in timer and a clocked-out elapsed-hours state.
+- Removed repeated employee selectors from individual cards and reused the shared selected employee across all workflows.
+- Verified `npx eslint components/time/time-page-client.tsx` and `npm run build` pass after the redesign.
